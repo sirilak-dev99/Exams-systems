@@ -1,0 +1,9 @@
+/.env
+/logs/*.log
+!/logs/.gitkeep
+/vendor/
+/.idea/
+/.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
