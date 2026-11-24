@@ -17,6 +17,7 @@
         >
         <label for="password">รหัสผ่าน</label>
         <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <input type="hidden" name="csrf_token" value="<?= Security::escape(Security::csrfToken()) ?>">
         <button type="submit">เข้าสู่ระบบ</button>
     </form>
 </section>

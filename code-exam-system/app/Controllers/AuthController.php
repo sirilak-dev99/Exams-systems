@@ -13,13 +13,20 @@ final class AuthController extends Controller
         $this->view('auth/login', ['pageTitle' => 'เข้าสู่ระบบ']);
     }
 
+
     public function login(): void
     {
-        if (!Security::verifyCsrf($_POST['_csrf'] ?? null)) {
+        $csrfToken = $_POST['csrf_token'] ?? null;
+        $identifier = trim((string)($_POST['identifier'] ?? ''));
+        $password   = (string)($_POST['password'] ?? '');
+
+        $token = $_POST['csrf_token'] ?? $_POST['_csrf'] ?? null;
+        if (!Security::verifyCsrf(is_string($token) ? $token : null)) {
             http_response_code(419);
             $this->view('auth/login', [
-                'pageTitle' => 'เข้าสู่ระบบ',
-                'error' => 'คำขอหมดอายุหรือไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง',
+                'pageTitle'  => 'เข้าสู่ระบบ',
+                'error'      => 'เซสชันฟอร์มหมดอายุหรือไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง',
+                'identifier' => $identifier,
             ]);
             return;
         }
@@ -66,25 +73,49 @@ final class AuthController extends Controller
 
     public function logout(): void
     {
-        if (!Security::verifyCsrf($_POST['_csrf'] ?? null)) {
-            http_response_code(419);
-            echo 'CSRF token ไม่ถูกต้อง';
+        Security::startSession();
+
+        // รองรับเฉพาะ POST เพื่อความปลอดภัยของ Session
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/');
             return;
         }
 
+        $token = $_POST['csrf_token'] ?? $_POST['_csrf'] ?? null;
+        if (!Security::verifyCsrf(is_string($token) ? $token : null)) {
+            http_response_code(419);
+            $this->view('errors/419', [
+                'pageTitle' => 'คำขอไม่ถูกต้อง',
+                'message'   => 'เซสชันหมดอายุหรือไม่ถูกต้อง กรุณารีเฟรชหน้าแล้วลองใหม่อีกครั้ง',
+            ]);
+            return;
+        }
+
+        // ล้างข้อมูลใน Session และลบ Cookie ของ Session
         $_SESSION = [];
+
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
-            setcookie(session_name(), '', [
-                'expires' => time() - 42000,
-                'path' => $params['path'] ?: '/',
-                'domain' => $params['domain'],
-                'secure' => $params['secure'],
-                'httponly' => $params['httponly'],
-                'samesite' => $params['samesite'] ?? 'Lax',
-            ]);
+            setcookie(
+                session_name(),
+                '',
+                [
+                    'expires'  => time() - 42000,
+                    'path'     => $params['path'] ?: '/',
+                    'domain'   => $params['domain'] ?: '',
+                    'secure'   => (bool)$params['secure'],
+                    'httponly' => true,
+                    'samesite' => $params['samesite'] ?: 'Lax',
+                ]
+            );
         }
+
         session_destroy();
-        $this->redirect('/login');
+
+        // เริ่มเซสชันใหม่สะอาดๆ เพื่อสร้าง CSRF Token ใหม่ให้หน้า Login
+        Security::startSession();
+        Security::refreshCsrfToken();
+
+        $this->redirect('auth/login');
     }
 }

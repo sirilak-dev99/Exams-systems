@@ -4,20 +4,68 @@ declare(strict_types=1);
 
 final class Security
 {
+    public const IDLE_TIMEOUT_SECONDS = 1800; // 30 นาที
+
     public static function startSession(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
+            self::enforceIdleTimeout();
             return;
         }
 
         ini_set('session.use_strict_mode', '1');
+
+        $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+
         session_set_cookie_params([
             'httponly' => true,
-            'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+            'secure'   => $isHttps,
             'samesite' => 'Lax',
-            'path' => '/',
+            'path'     => '/',
         ]);
+
         session_start();
+        self::enforceIdleTimeout();
+    }
+
+    private static function enforceIdleTimeout(): void
+    {
+        if (!isset($_SESSION['user']['id_users'])) {
+            return;
+        }
+
+        $now = time();
+        $lastActivity = (int)($_SESSION['_last_activity'] ?? $now);
+
+        if (($now - $lastActivity) > self::IDLE_TIMEOUT_SECONDS) {
+            self::destroySessionData();
+            return;
+        }
+
+        $_SESSION['_last_activity'] = $now;
+    }
+
+    public static function destroySessionData(): void
+    {
+        $_SESSION = [];
+
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                [
+                    'expires'  => time() - 3600,
+                    'path'     => $params['path'] ?: '/',
+                    'domain'   => $params['domain'] ?: '',
+                    'secure'   => (bool)$params['secure'],
+                    'httponly' => true,
+                    'samesite' => $params['samesite'] ?: 'Lax',
+                ]
+            );
+            session_destroy();
+        }
     }
 
     public static function csrfToken(): string
@@ -50,6 +98,14 @@ final class Security
     {
         self::startSession();
         return $_SESSION['user'] ?? null;
+    }
+
+    public static function requireLogin(string $redirectTo = 'index.php?url=auth/login'): void
+    {
+        if (!self::isAuthenticated()) {
+            header('Location: ' . $redirectTo);
+            exit;
+        }
     }
 
     public static function hasRole(string $role): bool
