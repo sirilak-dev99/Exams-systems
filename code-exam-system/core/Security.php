@@ -100,9 +100,37 @@ final class Security
         return $_SESSION['user'] ?? null;
     }
 
-    public static function requireLogin(string $redirectTo = 'index.php?url=auth/login'): void
+    public static function wantsJson(): bool
+    {
+        $accept = strtolower((string)($_SERVER['HTTP_ACCEPT'] ?? ''));
+        $xhr    = strtolower((string)($_SERVER['HTTP_X_REQUESTED_WITH'] ?? ''));
+        $uri    = (string)($_SERVER['REQUEST_URI'] ?? '');
+
+        return str_contains($accept, 'application/json')
+            || $xhr === 'xmlhttprequest'
+            || str_contains($uri, '/api/');
+    }
+
+    private static function sendJsonError(int $statusCode, string $code, string $message): never
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'data'  => null,
+            'error' => [
+                'code'    => $code,
+                'message' => $message,
+            ],
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    public static function requireLogin(string $redirectTo = '/code-exam-system-starter/code-exam-system/public/login'): void
     {
         if (!self::isAuthenticated()) {
+            if (self::wantsJson()) {
+                self::sendJsonError(401, 'UNAUTHORIZED', 'กรุณาเข้าสู่ระบบก่อนใช้งาน');
+            }
             header('Location: ' . $redirectTo);
             exit;
         }
@@ -114,34 +142,77 @@ final class Security
         return $user !== null && in_array($role, $user['roles'] ?? [], true);
     }
 
+    public static function hasAnyRole(array $roles): bool
+    {
+        $user = self::currentUser();
+        if ($user === null) {
+            return false;
+        }
+
+        $userRoles = $user['roles'] ?? [];
+        foreach ($roles as $role) {
+            if (in_array($role, $userRoles, true)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function requireRole(array $roles): void
+    {
+        self::requireLogin();
+        if (!self::hasAnyRole($roles)) {
+            if (self::wantsJson()) {
+                self::sendJsonError(403, 'FORBIDDEN', 'คุณไม่มีสิทธิ์เข้าถึงส่วนนี้');
+            }
+            http_response_code(403);
+            echo '403 Forbidden - คุณไม่มีสิทธิ์เข้าถึงหน้านี้';
+            exit;
+        }
+    }
+
+    public static function hasPermission(string $permissionCode): bool
+    {
+        $user = self::currentUser();
+        if ($user === null) {
+            return false;
+        }
+
+        // admin มีสิทธิ์เข้าถึงทุกคำสั่งโดยอัตโนมัติ
+        if (in_array('admin', $user['roles'] ?? [], true)) {
+            return true;
+        }
+
+        return in_array($permissionCode, $user['permissions'] ?? [], true);
+    }
+
+    public static function hasAnyPermission(array $permissionCodes): bool
+    {
+        foreach ($permissionCodes as $code) {
+            if (self::hasPermission($code)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function requirePermission(string|array $permissions): void
+    {
+        self::requireLogin();
+        $list = is_array($permissions) ? $permissions : [$permissions];
+
+        if (!self::hasAnyPermission($list)) {
+            if (self::wantsJson()) {
+                self::sendJsonError(403, 'FORBIDDEN', 'บัญชีของคุณไม่ได้รับอนุญาตให้ดำเนินการนี้');
+            }
+            http_response_code(403);
+            echo '403 Forbidden - บัญชีของคุณไม่ได้รับอนุญาตให้ดำเนินการนี้';
+            exit;
+        }
+    }
+
     public static function escape(?string $value): string
     {
         return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
-
-    public static function hasAnyRole(array $roles): bool
-{
-    $user = self::currentUser();
-    if ($user === null) {
-        return false;
-    }
-
-    $userRoles = $user['roles'] ?? [];
-    foreach ($roles as $role) {
-        if (in_array($role, $userRoles, true)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-public static function requireRole(array $roles): void
-{
-    self::requireLogin();
-    if (!self::hasAnyRole($roles)) {
-        http_response_code(403);
-        echo '403 Forbidden - คุณไม่มีสิทธิ์เข้าถึงหน้านี้';
-        exit;
-    }
-}
 }
