@@ -118,4 +118,30 @@ final class Security
     {
         return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
+
+    public static function hasAnyRole(array $roles): bool
+{
+    $user = self::currentUser();
+    if ($user === null) {
+        return false;
+    }
+
+    $userRoles = $user['roles'] ?? [];
+    foreach ($roles as $role) {
+        if (in_array($role, $userRoles, true)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+public static function requireRole(array $roles): void
+{
+    self::requireLogin();
+    if (!self::hasAnyRole($roles)) {
+        http_response_code(403);
+        echo '403 Forbidden - คุณไม่มีสิทธิ์เข้าถึงหน้านี้';
+        exit;
+    }
+}
 }
