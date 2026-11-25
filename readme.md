@@ -149,6 +149,7 @@ cd Exams-systems
 
 # 2. สลับไปที่ branch dev และดึงโค้ดล่าสุด
 git checkout dev
+git pull origin main      --ดึงโค้ดจาก branch หลัก
 git pull origin dev
 
 # 3. แตก branch ใหม่สำหรับงานของตัวเอง
