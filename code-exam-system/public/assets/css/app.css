@@ -385,6 +385,66 @@ svg { flex: none; }
 .shortcuts .is-soon { color: var(--c-muted); font-weight: 500; }
 .shortcuts .is-soon .badge { margin-left: auto; font-size: 12px; min-height: 22px; padding: 0 8px; }
 
+/* ---------- หน้าหลักอาจารย์ (design-exams/หน้าหลักของอาจารย์.png) ---------- */
+/* แถบทักทายมีภาพประกอบด้านขวา (ซ่อนบนจอเล็ก) */
+.greet--art { padding-right: 24px; min-height: 172px; }
+.greet__art { width: 380px; max-width: 42%; height: auto; flex: none; align-self: center; }
+.chip--lg { min-height: 44px; padding: 0 18px; gap: 8px; font-size: 16px; }
+.chip--lg svg { color: var(--c-primary); }
+@media (max-width: 900px) { .greet__art { display: none; } }
+
+/* ลิงก์ "ดู...ทั้งหมด →" */
+.home-more { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.home-more:hover { text-decoration: underline; }
+.home-more--center { align-self: center; margin-top: auto; }
+.home-more--end { align-self: flex-end; margin-top: auto; }
+
+/* แถบประกาศสำคัญ: ไอคอน | ป้าย | เนื้อหา | วันที่ | ลิงก์ */
+.announce { flex-direction: row; align-items: center; gap: 20px; padding: 0 24px 0 0; overflow: hidden; }
+.announce__icon { display: flex; align-items: center; justify-content: center; align-self: stretch; width: 90px; min-height: 84px; background: var(--c-primary-soft); color: var(--c-primary); flex: none; }
+.announce__label { font-size: 18px; color: var(--c-primary); padding-right: 20px; border-right: 1px solid var(--c-line); white-space: nowrap; }
+.announce__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 14px 0; }
+.announce__body b { color: var(--c-ink); }
+.announce__body span { color: var(--c-text-2); font-size: 15px; }
+.announce__date { display: inline-flex; align-items: center; gap: 6px; color: var(--c-text-2); font-size: 15px; white-space: nowrap; padding-right: 20px; border-right: 1px solid var(--c-line); }
+@media (max-width: 760px) {
+  .announce { flex-wrap: wrap; padding: 0 16px 14px 0; gap: 8px 16px; }
+  .announce__icon { min-height: 64px; width: 64px; align-self: auto; }
+  .announce__label { border: none; padding: 0; }
+  .announce__body { flex-basis: 100%; padding: 0 0 0 16px; }
+  .announce__date { border: none; padding: 0 0 0 16px; }
+}
+
+/* ป้ายเล็กในการ์ด */
+.tag { display: inline-flex; align-items: center; min-height: 28px; padding: 0 12px; border-radius: 999px; background: #EDE6FB; color: var(--c-primary-dark); font-size: 14px; font-weight: 600; width: fit-content; }
+.tag--warm { background: #FDF1DC; color: #8A4B00; }
+
+/* การ์ดรายวิชา 3 ใบ */
+.course-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.course-card { display: flex; flex-direction: column; border: 1px solid var(--c-line); border-radius: var(--radius-lg); overflow: hidden; background: #fff; }
+.course-card__img { display: flex; align-items: center; justify-content: center; height: 90px; background: linear-gradient(180deg, #EFE8FC, #E4D8F9); color: var(--c-primary); }
+.course-card__body { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 12px 14px 16px; }
+.course-card__body > b { color: var(--c-ink); line-height: 1.4; }
+.course-card__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ทางลัดแบบปุ่มใหญ่ */
+.shortcuts--big .shortcuts__head { display: flex; align-items: center; gap: 10px; padding: 20px 22px; }
+.shortcuts--big ul { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+.shortcuts--big a, .shortcuts--big .is-soon { min-height: 82px; padding: 0 18px; gap: 14px; border: 1px solid var(--c-line); background: var(--c-primary-soft); font-size: 17px; }
+.shortcuts--big a:hover { border-color: var(--c-primary); }
+.quick__icon { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; background: var(--c-primary); color: #fff; flex: none; }
+.shortcuts--big a svg:first-child { color: inherit; }
+.shortcuts--big .is-soon .quick__icon { background: #A79BC2; }
+
+/* การ์ดเนื้อหาการเรียน (แนวนอน) */
+.content-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.content-card { display: flex; border: 1px solid var(--c-line); border-radius: var(--radius-lg); overflow: hidden; background: #fff; }
+.content-card__img { display: flex; align-items: center; justify-content: center; width: 150px; flex: none; background: linear-gradient(180deg, #EFE8FC, #E4D8F9); color: var(--c-primary); }
+.content-card__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; }
+.content-card__body > b { color: var(--c-ink); }
+.content-card__body .muted { font-size: 15px; }
+@media (max-width: 900px) { .content-cards { grid-template-columns: 1fr; } .content-card__img { width: 96px; } }
+
 /* ตัวเลือกแบบปุ่ม (ExamCreate.html: ประเภทการสอบ / รูปแบบการสอบ) */
 .choices { display: flex; flex-wrap: wrap; gap: 10px; border: 0; margin: 0; padding: 0; }
 .choices legend { padding: 0; margin-bottom: 8px; font-size: 16px; font-weight: 700; }
