@@ -20,3 +20,14 @@ $router->post('/programs/{id}/delete', [ProgramController::class, 'destroy']); /
 
 $router->get('/programs/{id}/versions', [ProgramController::class, 'versions']);
 $router->post('/programs/{id}/versions', [ProgramController::class, 'storeVersion']);
+
+// กลุ่มวิชาและรายวิชา (Course Groups & Courses)
+$router->get('/course-groups', [CourseController::class, 'groupIndex']);
+$router->post('/course-groups', [CourseController::class, 'groupStore']);
+$router->post('/course-groups/{id}', [CourseController::class, 'groupUpdate']);
+$router->post('/course-groups/{id}/delete', [CourseController::class, 'groupDestroy']);
+
+$router->get('/courses', [CourseController::class, 'index']);
+$router->post('/courses', [CourseController::class, 'store']);
+$router->post('/courses/{id}', [CourseController::class, 'update']);
+$router->post('/courses/{id}/delete', [CourseController::class, 'destroy']);
