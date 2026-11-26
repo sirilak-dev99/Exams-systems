@@ -65,3 +65,9 @@ $router->get('/sections/{id}/staff', [SectionMemberController::class, 'staffInde
 $router->post('/sections/{id}/staff', [SectionMemberController::class, 'staffStore']);
 $router->post('/section-staff/{id}', [SectionMemberController::class, 'staffUpdate']);
 $router->post('/section-staff/{id}/delete', [SectionMemberController::class, 'staffDestroy']);
+
+// บทเรียน (Chapters)
+$router->get('/courses/{id}/chapters', [ChapterController::class, 'index']);
+$router->post('/courses/{id}/chapters', [ChapterController::class, 'store']);
+$router->post('/chapters/{id}', [ChapterController::class, 'update']);
+$router->post('/chapters/{id}/deactivate', [ChapterController::class, 'deactivate']);
