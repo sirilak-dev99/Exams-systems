@@ -55,6 +55,22 @@ $router->post('/course-offerings/{id}/sections', [CourseOfferingController::clas
 $router->post('/sections/{id}', [CourseOfferingController::class, 'sectionUpdate']);
 $router->post('/sections/{id}/delete', [CourseOfferingController::class, 'sectionDestroy']);
 
+// สมาชิกนิสิตและผู้รับผิดชอบประจำกลุ่มเรียน (Course Members & Section Staff)
+$router->get('/sections/{id}/members', [SectionMemberController::class, 'memberIndex']);
+$router->post('/sections/{id}/members', [SectionMemberController::class, 'memberStore']);
+$router->post('/course-members/{id}', [SectionMemberController::class, 'memberUpdate']);
+$router->post('/course-members/{id}/drop', [SectionMemberController::class, 'memberDrop']);
+
+$router->get('/sections/{id}/staff', [SectionMemberController::class, 'staffIndex']);
+$router->post('/sections/{id}/staff', [SectionMemberController::class, 'staffStore']);
+$router->post('/section-staff/{id}', [SectionMemberController::class, 'staffUpdate']);
+$router->post('/section-staff/{id}/delete', [SectionMemberController::class, 'staffDestroy']);
+
+// =========================================================
+// ฝั่งอาจารย์ (frontend) — หน้าตามคู่มือฝั่งอาจารย์ / prototype exam-bank-html
+// Controller/Model เป็นไฟล์ใหม่ (TeachingController, QuestionController) ไม่ได้แก้ของเดิม
+// ใส่ path คงที่ (เช่น /questions/create) ก่อน path ที่มี {id} เพราะ Router จับคู่ตามลำดับ
+// =========================================================
 // จัดการรายวิชา (Course.html) และรายละเอียดรายวิชา (CourseView.html · ?tab=)
 $router->get('/my-courses', [TeachingController::class, 'myCourses']);
 $router->get('/my-courses/{id}', [TeachingController::class, 'courseShow']);
