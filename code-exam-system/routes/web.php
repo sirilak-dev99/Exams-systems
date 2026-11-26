@@ -54,3 +54,18 @@ $router->get('/course-offerings/{id}/sections', [CourseOfferingController::class
 $router->post('/course-offerings/{id}/sections', [CourseOfferingController::class, 'sectionStore']);
 $router->post('/sections/{id}', [CourseOfferingController::class, 'sectionUpdate']);
 $router->post('/sections/{id}/delete', [CourseOfferingController::class, 'sectionDestroy']);
+
+// จัดการรายวิชา (Course.html) และรายละเอียดรายวิชา (CourseView.html · ?tab=)
+$router->get('/my-courses', [TeachingController::class, 'myCourses']);
+$router->get('/my-courses/{id}', [TeachingController::class, 'courseShow']);
+
+// จัดการชุดสอบ — รายการ (Exams.html) · ฟอร์มสร้างยังใช้ /exams/create ของ ExamController
+$router->get('/exams', [TeachingController::class, 'examIndex']);
+
+// คลังข้อสอบ (QuestionBank / QuestionView / QuestionForm)
+$router->get('/questions', [QuestionController::class, 'index']);
+$router->get('/questions/create', [QuestionController::class, 'create']);
+$router->post('/questions', [QuestionController::class, 'store']);
+$router->get('/questions/{id}', [QuestionController::class, 'show']);
+$router->get('/questions/{id}/edit', [QuestionController::class, 'edit']);
+$router->post('/questions/{id}', [QuestionController::class, 'update']);
