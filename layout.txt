@@ -7,86 +7,91 @@ D:.
 +---.vscode
 |       settings.json
 |       
-\---code-exam-system
-    |   .env
-    |   .gitignore
-    |   
-    +---app
-    |   +---Controllers
-    |   |       AuthController.php
-    |   |       ExamController.php
-    |   |       HomeController.php
-    |   |       
-    |   +---Models
-    |   |       ExamModel.php
-    |   |       QuestionModel.php
-    |   |       UserModel.php
-    |   |       
-    |   \---Views
-    |       |   dashboard.php
-    |       |   
-    |       +---attempts
-    |       |       .gitkeep
-    |       |       
-    |       +---auth
-    |       |       login.php
-    |       |       
-    |       +---courses
-    |       |       .gitkeep
-    |       |       
-    |       +---errors
-    |       |       404.php
-    |       |       
-    |       +---exams
-    |       |       .gitkeep
-    |       |       create.php
-    |       |       
-    |       +---includes
-    |       |       footer.php
-    |       |       header.php
-    |       |       
-    |       +---questions
-    |       |       .gitkeep
-    |       |       
-    |       +---reports
-    |       |       .gitkeep
-    |       |       
-    |       \---users
-    |               .gitkeep
-    |               
-    +---config
-    |       app.php
-    |       database.php
-    |       env.php
-    |       
-    +---core
-    |       App.php
-    |       Controller.php
-    |       Database.php
-    |       Logger.php
-    |       Router.php
-    |       Security.php
-    |       
-    +---database
-    |       .gitkeep
-    |       exam_system_db2.sql
-    |       seed_users.php
-    |       
-    +---logs
-    |       .gitkeep
-    |       app.log
-    |       
-    +---public
-    |   |   .htaccess
-    |   |   index.php
-    |   |   
-    |   \---assets
-    |       +---css
-    |       |       app.css
-    |       |       
-    |       \---js
-    |               .gitkeep
-    |               
-    \---routes
-            web.php
-            
++---code-exam-system
+|   |   .env
+|   |   .gitignore
+|   |   
+|   +---app
+|   |   +---Controllers
+|   |   |       AuthController.php
+|   |   |       ExamController.php
+|   |   |       HomeController.php
+|   |   |       ProgramController.php
+|   |   |       
+|   |   +---Models
+|   |   |       ExamModel.php
+|   |   |       ProgramModel.php
+|   |   |       QuestionModel.php
+|   |   |       UserModel.php
+|   |   |       
+|   |   \---Views
+|   |       |   dashboard.php
+|   |       |   
+|   |       +---attempts
+|   |       |       .gitkeep
+|   |       |       
+|   |       +---auth
+|   |       |       login.php
+|   |       |       
+|   |       +---courses
+|   |       |       .gitkeep
+|   |       |       
+|   |       +---errors
+|   |       |       404.php
+|   |       |       
+|   |       +---exams
+|   |       |       .gitkeep
+|   |       |       create.php
+|   |       |       
+|   |       +---includes
+|   |       |       footer.php
+|   |       |       header.php
+|   |       |       
+|   |       +---questions
+|   |       |       .gitkeep
+|   |       |       
+|   |       +---reports
+|   |       |       .gitkeep
+|   |       |       
+|   |       \---users
+|   |               .gitkeep
+|   |               
+|   +---config
+|   |       app.php
+|   |       database.php
+|   |       env.php
+|   |       
+|   +---core
+|   |       App.php
+|   |       Controller.php
+|   |       Database.php
+|   |       Logger.php
+|   |       Router.php
+|   |       Security.php
+|   |       
+|   +---database
+|   |       .gitkeep
+|   |       exam_system_db2.sql
+|   |       seed_users.php
+|   |       
+|   +---logs
+|   |       .gitkeep
+|   |       app.log
+|   |       
+|   +---public
+|   |   |   .htaccess
+|   |   |   index.php
+|   |   |   
+|   |   \---assets
+|   |       +---css
+|   |       |       app.css
+|   |       |       
+|   |       \---js
+|   |               .gitkeep
+|   |               
+|   \---routes
+|           web.php
+|           
+\---docs
+        api_contract.md
+        
