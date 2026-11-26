@@ -462,6 +462,7 @@ CREATE TABLE IF NOT EXISTS `chapters` (
     `courses_id` INT UNSIGNED NOT NULL,
     `chapters_no` INT UNSIGNED NOT NULL,
     `name` VARCHAR(150) NOT NULL,
+    `status` VARCHAR(20) NOT NULL DEFAULT 'active', 
     PRIMARY KEY (`id_chapters`),
     INDEX `fk_chapters_courses1_idx` (`courses_id` ASC),
     UNIQUE INDEX `uq_course_chapter_no` (
@@ -472,7 +473,8 @@ CREATE TABLE IF NOT EXISTS `chapters` (
         `id_chapters` ASC,
         `courses_id` ASC
     ),
-    CONSTRAINT `fk_chapters_courses1` FOREIGN KEY (`courses_id`) REFERENCES `courses` (`id_courses`) ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT `fk_chapters_courses1` FOREIGN KEY (`courses_id`) REFERENCES `courses` (`id_courses`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT `chk_chapters_status` CHECK (`status` IN ('active', 'inactive')) -- <--- เพิ่มบรรทัดนี้
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
