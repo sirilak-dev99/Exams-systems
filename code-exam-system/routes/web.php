@@ -31,3 +31,15 @@ $router->get('/courses', [CourseController::class, 'index']);
 $router->post('/courses', [CourseController::class, 'store']);
 $router->post('/courses/{id}', [CourseController::class, 'update']);
 $router->post('/courses/{id}/delete', [CourseController::class, 'destroy']);
+
+// ผูกวิชากับรุ่นหลักสูตร (Program Version Courses)
+$router->get('/program-versions/{id}/courses', [ProgramVersionCourseController::class, 'index']);
+$router->post('/program-versions/{id}/courses', [ProgramVersionCourseController::class, 'store']);
+$router->post('/program-version-courses/{id}', [ProgramVersionCourseController::class, 'update']);
+$router->post('/program-version-courses/{id}/delete', [ProgramVersionCourseController::class, 'destroy']);
+
+// ภาคเรียน (Academic Terms)
+$router->get('/academic-terms', [AcademicTermController::class, 'index']);
+$router->post('/academic-terms', [AcademicTermController::class, 'store']);
+$router->post('/academic-terms/{id}', [AcademicTermController::class, 'update']);
+$router->post('/academic-terms/{id}/delete', [AcademicTermController::class, 'destroy']);
