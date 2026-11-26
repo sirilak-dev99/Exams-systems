@@ -54,3 +54,14 @@ $router->get('/course-offerings/{id}/sections', [CourseOfferingController::class
 $router->post('/course-offerings/{id}/sections', [CourseOfferingController::class, 'sectionStore']);
 $router->post('/sections/{id}', [CourseOfferingController::class, 'sectionUpdate']);
 $router->post('/sections/{id}/delete', [CourseOfferingController::class, 'sectionDestroy']);
+
+// สมาชิกนิสิตและผู้รับผิดชอบประจำกลุ่มเรียน (Course Members & Section Staff)
+$router->get('/sections/{id}/members', [SectionMemberController::class, 'memberIndex']);
+$router->post('/sections/{id}/members', [SectionMemberController::class, 'memberStore']);
+$router->post('/course-members/{id}', [SectionMemberController::class, 'memberUpdate']);
+$router->post('/course-members/{id}/drop', [SectionMemberController::class, 'memberDrop']);
+
+$router->get('/sections/{id}/staff', [SectionMemberController::class, 'staffIndex']);
+$router->post('/sections/{id}/staff', [SectionMemberController::class, 'staffStore']);
+$router->post('/section-staff/{id}', [SectionMemberController::class, 'staffUpdate']);
+$router->post('/section-staff/{id}/delete', [SectionMemberController::class, 'staffDestroy']);
