@@ -43,3 +43,14 @@ $router->get('/academic-terms', [AcademicTermController::class, 'index']);
 $router->post('/academic-terms', [AcademicTermController::class, 'store']);
 $router->post('/academic-terms/{id}', [AcademicTermController::class, 'update']);
 $router->post('/academic-terms/{id}/delete', [AcademicTermController::class, 'destroy']);
+
+// เปิดสอนรายวิชา (Course Offerings) และกลุ่มเรียน (Sections)
+$router->get('/course-offerings', [CourseOfferingController::class, 'index']);
+$router->post('/course-offerings', [CourseOfferingController::class, 'store']);
+$router->post('/course-offerings/{id}', [CourseOfferingController::class, 'update']);
+$router->post('/course-offerings/{id}/delete', [CourseOfferingController::class, 'destroy']);
+
+$router->get('/course-offerings/{id}/sections', [CourseOfferingController::class, 'sectionIndex']);
+$router->post('/course-offerings/{id}/sections', [CourseOfferingController::class, 'sectionStore']);
+$router->post('/sections/{id}', [CourseOfferingController::class, 'sectionUpdate']);
+$router->post('/sections/{id}/delete', [CourseOfferingController::class, 'sectionDestroy']);
