@@ -2,6 +2,7 @@
 /**
  * ============================================================
  *  หน้า        : จัดการรายวิชา (รายวิชาที่อาจารย์สอน)
+ *  สถานะ       : view พร้อมใช้ — รอ backend เพิ่ม route/Controller (ร่างเก็บไว้ที่ branch draft/teaching-backend)
  *  Route       : GET /my-courses → TeachingController@myCourses
  *  สิทธิ์       : อาจารย์, แอดมิน
  *  แบบหน้าจอ   : prototype Course.html

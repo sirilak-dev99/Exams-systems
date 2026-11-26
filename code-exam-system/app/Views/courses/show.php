@@ -2,6 +2,7 @@
 /**
  * ============================================================
  *  หน้า        : รายละเอียดรายวิชาที่สอน (9 แท็บ)
+ *  สถานะ       : view พร้อมใช้ — รอ backend เพิ่ม route/Controller (ร่างเก็บไว้ที่ branch draft/teaching-backend)
  *  Route       : GET /my-courses/{id} → TeachingController@courseShow   (id = id_course_offerings)
  *  สิทธิ์       : ผู้สอนของรายวิชานี้ (section_staff) หรือแอดมิน · ไม่ได้สอน = "ไม่พบรายวิชา" (404)
  *  แบบหน้าจอ   : prototype CourseView.html · คู่มือฝั่งอาจารย์ หน้า 06–17

@@ -19,7 +19,10 @@
 | 4 | **404 / 500 ตอบเป็น HTML** แม้ขอ JSON (`Router` และ `public/index.php`) | frontend อ่าน error ไม่ได้ | ใน Router / index.php ถ้า `Security::wantsJson()` ให้ตอบ `{ data: null, error: { code: 'NOT_FOUND' / 'INTERNAL_SERVER_ERROR' } }` |
 | 5 | **error code นอก contract** — `INVALID_YEAR`, `PROGRAM_VERSION_NOT_FOUND`, `OFFERING_NOT_FOUND`, `GROUP_NOT_FOUND`, `DUPLICATE_*`, `*_IN_USE` | contract ข้อ 3 ไม่ได้ระบุ | เพิ่มลงตารางใน `docs/api_contract.md` |
 
-## route ที่ frontend เพิ่ม (ต่อท้าย `routes/web.php` · ไฟล์ใหม่ทั้งหมด ไม่ได้แก้ Controller/Model เดิม)
+## route ที่หน้าฝั่งอาจารย์ต้องใช้ (ข้อเสนอให้ backend · ยังไม่ได้เพิ่มใน `routes/web.php`)
+
+> **สถานะ:** frontend ทำแค่ view ไว้ ส่วน route/Controller/Model เป็นงานของ backend (ข้อ 22, 23, 27)
+> ร่างที่เคยเขียนและทดสอบไว้เก็บที่ branch `draft/teaching-backend` ในเครื่องของเฟม (ยังไม่ได้ push) — ใช้ต่อ แก้ หรือเขียนใหม่ได้ตามสะดวก
 
 | Method | Path | Handler | สิทธิ์ | JSON |
 |---|---|---|---|---|
@@ -33,7 +36,7 @@
 | GET | `/questions/{id}/edit` | `QuestionController@edit` | `question.manage` | (หน้าฟอร์ม) |
 | POST | `/questions/{id}` | `QuestionController@update` | `question.manage` | `{ question, version_no }` — แก้ไขแล้วสร้างฉบับใหม่ใน `question_versions` |
 
-ไฟล์ใหม่: `app/Controllers/TeachingController.php`, `app/Controllers/QuestionController.php`, `app/Models/TeachingModel.php`, `app/Models/QuestionBankModel.php`
+ไฟล์ในร่าง: `app/Controllers/TeachingController.php`, `app/Controllers/QuestionController.php`, `app/Models/TeachingModel.php`, `app/Models/QuestionBankModel.php`
 ทุก SQL ใช้ชื่อพารามิเตอร์ไม่ซ้ำกันในคำสั่งเดียว · บันทึกข้อสอบอยู่ใน transaction
 
 ทดสอบการบันทึกข้อสอบจริงแล้ว (เพิ่มปรนัย / ถูก-ผิด / อัตนัย, ส่งไม่ครบได้ 422 พร้อมข้อความรายช่อง, แก้ไขได้ฉบับที่ 2 ที่อ้างฉบับเดิม) แล้วลบข้อมูลทดสอบออก

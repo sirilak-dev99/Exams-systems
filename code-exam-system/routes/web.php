@@ -65,23 +65,3 @@ $router->get('/sections/{id}/staff', [SectionMemberController::class, 'staffInde
 $router->post('/sections/{id}/staff', [SectionMemberController::class, 'staffStore']);
 $router->post('/section-staff/{id}', [SectionMemberController::class, 'staffUpdate']);
 $router->post('/section-staff/{id}/delete', [SectionMemberController::class, 'staffDestroy']);
-
-// =========================================================
-// ฝั่งอาจารย์ (frontend) — หน้าตามคู่มือฝั่งอาจารย์ / prototype exam-bank-html
-// Controller/Model เป็นไฟล์ใหม่ (TeachingController, QuestionController) ไม่ได้แก้ของเดิม
-// ใส่ path คงที่ (เช่น /questions/create) ก่อน path ที่มี {id} เพราะ Router จับคู่ตามลำดับ
-// =========================================================
-// จัดการรายวิชา (Course.html) และรายละเอียดรายวิชา (CourseView.html · ?tab=)
-$router->get('/my-courses', [TeachingController::class, 'myCourses']);
-$router->get('/my-courses/{id}', [TeachingController::class, 'courseShow']);
-
-// จัดการชุดสอบ — รายการ (Exams.html) · ฟอร์มสร้างยังใช้ /exams/create ของ ExamController
-$router->get('/exams', [TeachingController::class, 'examIndex']);
-
-// คลังข้อสอบ (QuestionBank / QuestionView / QuestionForm)
-$router->get('/questions', [QuestionController::class, 'index']);
-$router->get('/questions/create', [QuestionController::class, 'create']);
-$router->post('/questions', [QuestionController::class, 'store']);
-$router->get('/questions/{id}', [QuestionController::class, 'show']);
-$router->get('/questions/{id}/edit', [QuestionController::class, 'edit']);
-$router->post('/questions/{id}', [QuestionController::class, 'update']);

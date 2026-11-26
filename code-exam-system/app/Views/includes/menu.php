@@ -40,9 +40,11 @@ if (!function_exists('app_menu')) {
             // อาจารย์ 5 เมนู (คุมสอบ ตรวจข้อเขียน สอบกระดาษ เป็นหน้าย่อยในชุดสอบ/ผลสอบ)
             'instructor' => [
                 '' => [
-                    $live('จัดการรายวิชา', 'book', '/my-courses', $canExam, 'รายวิชาที่ท่านสอน กลุ่มเรียน และจำนวนนิสิต', ['/my-courses/*']),
-                    $live('คลังข้อสอบ', 'bank', '/questions', Security::hasPermission('question.manage'), 'จัดเก็บ ค้นหา และจัดการข้อสอบ', ['/questions/*']),
-                    $live('จัดการชุดสอบ', 'clip', '/exams', $canExam, 'สร้าง กำหนดเวลา และติดตามการสอบ', ['/exams/*']),
+                    // view พร้อมแล้ว (courses/teaching.php, questions/*.php, exams/index.php) — รอ route จาก backend
+                    //   จัดการรายวิชา → GET /my-courses · คลังข้อสอบ → GET /questions (ข้อ 22) · รายการชุดสอบ → GET /exams (ข้อ 27)
+                    $soon('จัดการรายวิชา', 'book'),
+                    $soon('คลังข้อสอบ', 'bank'),
+                    $live('จัดการชุดสอบ', 'clip', '/exams/create', $canExam, 'สร้าง กำหนดเวลา และติดตามการสอบ', ['/exams/*']),
                     $soon('ผลสอบและรายงาน', 'chart'),
                 ],
             ],

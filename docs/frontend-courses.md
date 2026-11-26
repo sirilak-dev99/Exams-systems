@@ -1,5 +1,7 @@
 # จัดการรายวิชา (อาจารย์) — view ที่ทำไว้แล้ว และสิ่งที่ backend ต้องเพิ่ม
 
+> **สถานะ:** view พร้อมใช้ แต่ยังไม่มี route — route/Controller/Model เป็นงานของ backend (จอย) ร่างที่ทดสอบแล้วเก็บไว้ที่ branch `draft/teaching-backend` ในเครื่องของเฟม
+
 หน้าจอทำตาม prototype `Course.html` อยู่ที่ `code-exam-system/app/Views/courses/teaching.php`
 ใน prototype หน้านี้คือ **รายวิชาที่อาจารย์สอน** (รายวิชา × ภาค × กลุ่มเรียน + จำนวนนิสิต) ไม่ใช่รายวิชาทั้งหมดในระบบ
 จึงใช้ `GET /courses` ที่มีอยู่ไม่ได้ (`CourseController@index` ส่งแค่ตาราง `courses`) ต้องมี route ใหม่

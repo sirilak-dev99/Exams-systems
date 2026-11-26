@@ -9,20 +9,12 @@
  *  ข้อมูลที่ได้รับ
  *    $error  ข้อความเมื่อบันทึกไม่สำเร็จ · $old  ค่าที่กรอกไว้ (ExamController@store ส่งกลับมา)
  *
- *  การทำงาน
- *    /exams/create?new=1  → แสดงฟอร์ม (ปุ่ม "สร้างชุดสอบ" ในหน้า /exams ชี้มาที่นี่)
- *    บันทึกไม่ผ่าน        → แสดงฟอร์มพร้อมข้อความและค่าที่กรอกไว้
- *    /exams/create เฉย ๆ  → ส่งต่อไปหน้ารายการ /exams (เช่น ExamController@store บันทึกผ่านแล้ว redirect กลับมา)
+ *  บันทึกไม่ผ่าน → แสดงฟอร์มพร้อมข้อความและค่าที่กรอกไว้
+ *  เมื่อ backend เพิ่ม GET /exams (รายการชุดสอบ · ข้อ 27) ให้เปลี่ยนลิงก์ "กลับ" และ "ยกเลิก" ไปที่ /exams
  * ============================================================
  */
-$showForm = isset($_GET['new']) || !empty($error) || !empty($old);
-if (!$showForm) {
-    header('Location: ' . rtrim((string)env('APP_URL', ''), '/') . '/exams');
-    exit;
-}
 
 $pageTitle = 'สร้างชุดสอบ';
-$crumbSub  = 'สร้างชุดสอบ';   // header แสดง: หน้าหลัก › จัดการชุดสอบ › สร้างชุดสอบ
 // ---------- ข้อความไทยของประเภทและรูปแบบการสอบ (ชุดเดิมของ ExamController) ----------
 $kindLabels = [
     'quiz'     => 'สอบย่อย (Quiz)',
@@ -44,7 +36,7 @@ $modeLabels = [
 <?php /* ==================== หัวหน้า ==================== */ ?>
 <div class="page-head">
     <div class="page-head__text">
-        <p><a href="<?= Security::escape((string)env('APP_URL', '')) ?>/exams">← จัดการชุดสอบ</a></p>
+        <p><a href="<?= Security::escape((string)env('APP_URL', '')) ?>/">← หน้าหลัก</a></p>
         <h1>สร้างชุดสอบ</h1>
         <p>กรอกข้อมูลชุดข้อสอบ ระบบจะบันทึกเป็นฉบับร่างก่อนเผยแพร่</p>
     </div>
@@ -123,7 +115,7 @@ $modeLabels = [
     </section>
 
     <div class="btn-row btn-row--end">
-        <a class="btn btn--ghost btn--lg" href="<?= Security::escape((string)env('APP_URL', '')) ?>/exams">ยกเลิก</a>
+        <a class="btn btn--ghost btn--lg" href="<?= Security::escape((string)env('APP_URL', '')) ?>/">ยกเลิก</a>
         <button class="btn btn--primary btn--lg" type="submit">บันทึกชุดข้อสอบ</button>
     </div>
 </form>

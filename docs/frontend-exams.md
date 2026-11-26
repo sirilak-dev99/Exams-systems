@@ -1,5 +1,7 @@
 # จัดการชุดสอบ — view ที่ทำไว้แล้ว และสิ่งที่ backend ต้องเพิ่ม
 
+> **สถานะ:** view พร้อมใช้ แต่ยังไม่มี route — route/Controller/Model เป็นงานของ backend (จอย) ร่างที่ทดสอบแล้วเก็บไว้ที่ branch `draft/teaching-backend` ในเครื่องของเฟม
+
 หน้าจอทำตาม prototype `Exams.html` อยู่ที่ `code-exam-system/app/Views/exams/index.php`
 ใช้แบบเดียวกับหน้าอื่น (`Security::escape`, ตัวกรองเป็นฟอร์ม GET, ไม่ใช้ API)
 

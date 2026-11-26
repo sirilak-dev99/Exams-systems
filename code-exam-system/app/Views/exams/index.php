@@ -2,6 +2,7 @@
 /**
  * ============================================================
  *  หน้า        : จัดการชุดสอบ (รายการชุดสอบ)
+ *  สถานะ       : view พร้อมใช้ — รอ backend เพิ่ม route/Controller (ร่างเก็บไว้ที่ branch draft/teaching-backend)
  *  Route       : GET /exams → TeachingController@examIndex
  *  สิทธิ์       : อาจารย์ (เห็นชุดที่ตัวเองสร้าง), แอดมิน (เห็นทั้งหมด)
  *  แบบหน้าจอ   : prototype Exams.html

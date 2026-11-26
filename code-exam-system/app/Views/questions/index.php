@@ -2,6 +2,7 @@
 /**
  * ============================================================
  *  หน้า        : คลังข้อสอบ (รายการ + ตัวกรอง)
+ *  สถานะ       : view พร้อมใช้ — รอ backend เพิ่ม route/Controller (ร่างเก็บไว้ที่ branch draft/teaching-backend)
  *  Route       : GET /questions → QuestionController@index
  *  สิทธิ์       : question.manage (อาจารย์, แอดมิน)
  *  แบบหน้าจอ   : prototype QuestionBank.html

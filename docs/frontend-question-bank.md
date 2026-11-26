@@ -1,5 +1,7 @@
 # คลังข้อสอบ — view ที่ทำไว้แล้ว และสิ่งที่ backend ต้องเพิ่ม
 
+> **สถานะ:** view พร้อมใช้ แต่ยังไม่มี route — route/Controller/Model เป็นงานของ backend (จอย) ร่างที่ทดสอบแล้วเก็บไว้ที่ branch `draft/teaching-backend` ในเครื่องของเฟม
+
 หน้าจอทำตาม prototype `QuestionBank.html`, `QuestionView.html`, `QuestionForm.html`
 view อยู่ใน `code-exam-system/app/Views/questions/` ใช้แบบเดียวกับหน้าอื่นของโปรเจกต์ (`Security::escape`, ฟอร์ม POST + `csrf_token`, ไม่ใช้ API)
 ชื่อตัวแปรและชื่อฟิลด์ตั้งตามคอลัมน์ในตาราง `questions`, `question_versions`, `question_options`, `chapters`, `bloom_levels`, `learning_outcomes`
