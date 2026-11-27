@@ -35,10 +35,22 @@ $cssVer  = is_file($cssFile) ? (string)filemtime($cssFile) : '1';
         <?php /* ---------- แถบบน ---------- */ ?>
         <header class="topbar">
             <div class="crumbs"><?= ui_icon('home', 20) ?><b><?= Security::escape($pageTitle) ?></b></div>
-            <div class="user">
-                <span class="user__avatar" aria-hidden="true"><?= ui_icon('user', 22) ?></span>
-                <span class="user__name"><b><?= Security::escape((string)($authUser['display_name'] ?? '')) ?></b></span>
-            </div>
+            <?php /* ---------- เมนูโปรไฟล์ ---------- */ ?>
+            <details class="profile">
+                <summary class="user" aria-label="เมนูผู้ใช้">
+                    <span class="user__avatar" aria-hidden="true"><?= ui_icon('user', 22) ?></span>
+                    <span class="user__name"><b><?= Security::escape((string)($authUser['display_name'] ?? '')) ?></b></span>
+                    <span class="user__caret"><?= ui_icon('chev', 18) ?></span>
+                </summary>
+                <div class="profile__menu">
+                    <span class="profile__item profile__item--soon" aria-disabled="true"><?= ui_icon('gear', 20) ?>ตั้งค่า<small>เร็วๆ นี้</small></span>
+                    <div class="profile__sep" role="separator"></div>
+                    <form method="post" action="<?= Security::escape($appUrl) ?>/logout">
+                        <input type="hidden" name="_csrf" value="<?= Security::escape(Security::csrfToken()) ?>">
+                        <button type="submit" class="profile__item"><?= ui_icon('logout', 20) ?>ออกจากระบบ</button>
+                    </form>
+                </div>
+            </details>
         </header>
 
         <?php /* ---------- เนื้อหา ---------- */ ?>

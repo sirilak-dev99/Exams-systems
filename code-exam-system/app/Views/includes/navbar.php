@@ -68,12 +68,4 @@ $viewsDir = dirname(__DIR__);
             <?php endforeach; ?>
         <?php endforeach; ?>
     </ul>
-
-    <?php /* ---------- ออกจากระบบ ---------- */ ?>
-    <div class="sidebar__foot">
-        <form method="post" action="<?= Security::escape($appUrl) ?>/logout">
-            <input type="hidden" name="_csrf" value="<?= Security::escape(Security::csrfToken()) ?>">
-            <button type="submit" class="nav__link sidebar__logout"><?= ui_icon('logout') ?><span>ออกจากระบบ</span></button>
-        </form>
-    </div>
 </nav>
