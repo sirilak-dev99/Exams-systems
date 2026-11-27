@@ -1,7 +1,7 @@
 <?php
 // ---------- ค่าพื้นฐาน ----------
 $courseOfferings = $courseOfferings ?? [];
-$pageTitle       = $pageTitle ?? 'เปิดสอนรายวิชา';
+$pageTitle       = 'เปิดสอนรายวิชา';
 require dirname(__DIR__) . '/includes/header.php';
 
 // ---------- ตัวกรอง ----------
@@ -23,38 +23,44 @@ $percent = function ($value): string {
     return rtrim(rtrim(number_format((float)$value, 2, '.', ''), '0'), '.') . '%';
 };
 ?>
-<section class="panel">
-    <?php /* ---------- หัวข้อ ---------- */ ?>
-    <h1>เปิดสอนรายวิชา</h1>
-    <p class="muted">รายวิชาที่เปิดสอนในแต่ละภาคการศึกษา และจำนวนกลุ่มเรียน</p>
+<?php /* ---------- หัวข้อ ---------- */ ?>
+<div class="page-head">
+    <div class="page-head__text">
+        <h1>เปิดสอนรายวิชา</h1>
+        <p>รายวิชาที่เปิดสอนในแต่ละภาคการศึกษา และจำนวนกลุ่มเรียน</p>
+    </div>
+</div>
 
+<section class="card card--flush">
     <?php /* ---------- ตัวกรอง ---------- */ ?>
-    <form class="filters" method="get" action="<?= Security::escape($appUrl) ?>/course-offerings">
-        <div>
-            <label for="fTerm">ภาคการศึกษา</label>
-            <select id="fTerm" name="academic_terms_id">
+    <form class="toolbar" method="get" action="<?= Security::escape($appUrl) ?>/course-offerings" role="search">
+        <div class="field field--sm">
+            <label class="field__label" for="fTerm">ภาคการศึกษา</label>
+            <select class="select" id="fTerm" name="academic_terms_id">
                 <option value="">ทุกภาค</option>
                 <?php foreach ($termOptions as $id => $label): ?>
                     <option value="<?= $id ?>"<?= $termId === (string)$id ? ' selected' : '' ?>><?= Security::escape($label) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
-        <div>
-            <label for="fStatus">สถานะ</label>
-            <select id="fStatus" name="status">
+        <div class="field field--sm">
+            <label class="field__label" for="fStatus">สถานะ</label>
+            <select class="select" id="fStatus" name="status">
                 <option value="">ทุกสถานะ</option>
                 <?php foreach ($statusLabels as $value => $label): ?>
                     <option value="<?= Security::escape($value) ?>"<?= $status === $value ? ' selected' : '' ?>><?= Security::escape($label) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
-        <button type="submit">ค้นหา</button>
-        <?php if ($filtered): ?><a href="<?= Security::escape($appUrl) ?>/course-offerings">ล้างตัวกรอง</a><?php endif; ?>
+        <div class="btn-row">
+            <button class="btn btn--primary" type="submit">ค้นหา</button>
+            <?php if ($filtered): ?><a class="btn btn--ghost" href="<?= Security::escape($appUrl) ?>/course-offerings">ล้างตัวกรอง</a><?php endif; ?>
+        </div>
     </form>
 
     <?php /* ---------- ตาราง ---------- */ ?>
     <?php if (!$courseOfferings): ?>
-        <p class="muted"><?= $filtered ? 'ไม่พบรายวิชาที่เปิดสอนตามเงื่อนไข' : 'ยังไม่มีรายวิชาที่เปิดสอน' ?></p>
+        <div class="empty"><?= ui_icon('inbox', 40) ?><b><?= $filtered ? 'ไม่พบรายวิชาที่เปิดสอนตามเงื่อนไข' : 'ยังไม่มีรายวิชาที่เปิดสอน' ?></b></div>
     <?php else: ?>
         <div class="table-wrap">
             <table class="table">
@@ -63,26 +69,26 @@ $percent = function ($value): string {
                         <th scope="col">รหัสวิชา</th>
                         <th scope="col">ชื่อรายวิชา</th>
                         <th scope="col">ภาค/ปี</th>
-                        <th scope="col">เกณฑ์ผ่าน</th>
-                        <th scope="col">กลุ่มเรียน</th>
+                        <th scope="col" class="num">เกณฑ์ผ่าน</th>
+                        <th scope="col" class="num">กลุ่มเรียน</th>
                         <th scope="col">สถานะ</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($courseOfferings as $o): ?>
                         <tr>
-                            <td><b><?= Security::escape((string)$o['course_code']) ?></b></td>
+                            <td class="code nowrap"><?= Security::escape((string)$o['course_code']) ?></td>
                             <td><?= Security::escape((string)$o['course_name']) ?></td>
-                            <td><?= (int)$o['term_no'] ?>/<?= (int)$o['academic_year'] ?></td>
-                            <td><?= Security::escape($percent($o['pass_percent'] ?? null)) ?></td>
-                            <td><?= (int)$o['sections_count'] ?> กลุ่ม</td>
+                            <td class="nowrap"><?= (int)$o['term_no'] ?>/<?= (int)$o['academic_year'] ?></td>
+                            <td class="num"><?= Security::escape($percent($o['pass_percent'] ?? null)) ?></td>
+                            <td class="num"><?= (int)$o['sections_count'] ?></td>
                             <td><span class="badge badge--offering-<?= Security::escape((string)$o['status']) ?>"><?= Security::escape($statusLabels[$o['status']] ?? (string)$o['status']) ?></span></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
-        <p class="muted">ทั้งหมด <?= count($courseOfferings) ?> รายการ</p>
+        <div class="table-foot">ทั้งหมด <?= count($courseOfferings) ?> รายการ</div>
     <?php endif; ?>
 </section>
 <?php require dirname(__DIR__) . '/includes/footer.php'; ?>
