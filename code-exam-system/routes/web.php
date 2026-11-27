@@ -144,3 +144,10 @@ $router->post('/eligibility-grants/{id}/revoke', [ExamEligibilityController::cla
 $router->get('/exams/{id}/access-codes', [ExamAccessCodeController::class, 'index']);
 $router->post('/exams/{id}/access-codes', [ExamAccessCodeController::class, 'store']);
 $router->post('/access-codes/{id}/revoke', [ExamAccessCodeController::class, 'revoke']);
+
+// การเข้าสอบ บันทึกคำตอบ และส่งข้อสอบของนิสิต (ลำดับ 37, 38, 39)
+$router->post('/exams/{id}/attempts/start', [AttemptController::class, 'start']);
+$router->get('/attempts/{id}', [AttemptController::class, 'show']);
+$router->post('/attempts/{id}/resume', [AttemptController::class, 'resume']);
+$router->post('/attempts/{id}/answers', [AttemptController::class, 'saveAnswer']);
+$router->post('/attempts/{id}/submit', [AttemptController::class, 'submit']);
