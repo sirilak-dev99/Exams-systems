@@ -854,3 +854,5 @@ body.layout-auth { background: var(--c-bg); }
 .student-home__side { display: flex; flex-direction: column; gap: 18px; }
 .student-home__title { font-size: 17px; font-weight: 700; color: var(--c-ink); }
 @media (max-width: 900px) { .student-home { grid-template-columns: 1fr; } .dash-hero__art { display: none; } }
+.shortcuts--big .is-soon .quick__icon { background: var(--c-primary); }
+.nav__link, .nav__link--soon { padding: 0 14px; gap: 12px; font-size: 16px; }
