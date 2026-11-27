@@ -1,26 +1,36 @@
 <?php
 // ---------- บทบาท ----------
-$roles      = (array)($authUser['roles'] ?? []);
-$isTeacher  = in_array('instructor', $roles, true);
-$isStaff    = (bool)array_intersect($roles, ['admin', 'academic_staff']);
+$roles     = (array)($authUser['roles'] ?? []);
+$isTeacher = in_array('instructor', $roles, true);
+$isAdmin   = in_array('admin', $roles, true);
+$isStaff   = $isAdmin || in_array('academic_staff', $roles, true);
 
-// ---------- รายการเมนู: [ชื่อ, ไอคอน, path หรือ null, view] ----------
+// ---------- รายการเมนู: [ชื่อ, ไอคอน, path หรือ null, view, path ของหน้าย่อย] ----------
+$catalog = ['/programs', '/course-groups', '/courses', '/academic-terms', '/course-offerings'];
 $navGroups = [];
-$navGroups[''] = [['หน้าหลัก', 'home', '/', 'dashboard']];
-if ($isTeacher) {
-    $navGroups[''][] = ['จัดการรายวิชา',    'book',  null, null];
-    $navGroups[''][] = ['คลังข้อสอบ',       'bank',  null, null];
-    $navGroups[''][] = ['จัดการชุดสอบ',     'clip',  null, null];
-    $navGroups[''][] = ['ผลสอบและรายงาน',  'chart', null, null];
+if ($isStaff && !$isTeacher) {
+    $navGroups['งานวิชาการ'] = [
+        ['Dashboard',          'home',   '/',         'dashboard',      []],
+        ['หลักสูตรและรายวิชา', 'school', '/programs', 'programs/index', $catalog],
+        ['จัดการนิสิต',         'users',  null,        null,             []],
+        ['ติดตามผลการสอบ',     'chart',  null,        null,             []],
+        ['ประชาสัมพันธ์',       'news',   null,        null,             []],
+    ];
+} else {
+    $navGroups[''] = [['หน้าหลัก', 'home', '/', 'dashboard', []]];
+    if ($isTeacher) {
+        $navGroups[''][] = ['จัดการรายวิชา',   'book',  null, null, []];
+        $navGroups[''][] = ['คลังข้อสอบ',      'bank',  null, null, []];
+        $navGroups[''][] = ['จัดการชุดสอบ',    'clip',  null, null, []];
+        $navGroups[''][] = ['ผลสอบและรายงาน', 'chart', null, null, []];
+    }
 }
-if ($isStaff) {
-    $navGroups['งานวิชาการ'] = array_values(array_filter([
-        Security::hasPermission('program.manage') ? ['หลักสูตร',      'school',   '/programs',         'programs/index'] : null,
-        Security::hasPermission('course.manage')  ? ['กลุ่มวิชา',      'folder',   '/course-groups',    'courses/groups'] : null,
-        Security::hasPermission('course.view')    ? ['รายวิชา',       'book',     '/courses',          'courses/index'] : null,
-        Security::hasPermission('course.view')    ? ['ภาคการศึกษา',   'calendar', '/academic-terms',   'academic_terms/index'] : null,
-        Security::hasPermission('course.view')    ? ['เปิดสอนรายวิชา', 'layers',   '/course-offerings', 'course_offerings/index'] : null,
-    ]));
+if ($isAdmin) {
+    $navGroups['ระบบ'] = [
+        ['ผู้ใช้และสิทธิ์',  'shield', null, null, []],
+        ['บันทึกการใช้งาน', 'log',    null, null, []],
+        ['ตั้งค่าระบบ',      'gear',   null, null, []],
+    ];
 }
 
 // ---------- หน้าปัจจุบัน ----------
@@ -43,10 +53,10 @@ $viewsDir = dirname(__DIR__);
     <ul class="nav">
         <?php foreach ($navGroups as $group => $items): ?>
             <?php if ($group !== ''): ?><li class="nav__group" aria-hidden="true"><?= Security::escape($group) ?></li><?php endif; ?>
-            <?php foreach ($items as [$label, $icon, $href, $view]): ?>
+            <?php foreach ($items as [$label, $icon, $href, $view, $match]): ?>
                 <li>
                     <?php if ($href !== null && is_file($viewsDir . '/' . $view . '.php')): ?>
-                        <a class="nav__link" href="<?= Security::escape($appUrl . $href) ?>"<?= $currentPath === $href ? ' aria-current="page"' : '' ?>>
+                        <a class="nav__link" href="<?= Security::escape($appUrl . $href) ?>"<?= $currentPath === $href ? ' aria-current="page"' : (in_array($currentPath, $match, true) ? ' aria-current="true"' : '') ?>>
                             <?= ui_icon($icon) ?><span><?= Security::escape($label) ?></span>
                         </a>
                     <?php else: ?>
