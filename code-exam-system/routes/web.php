@@ -151,3 +151,29 @@ $router->get('/attempts/{id}', [AttemptController::class, 'show']);
 $router->post('/attempts/{id}/resume', [AttemptController::class, 'resume']);
 $router->post('/attempts/{id}/answers', [AttemptController::class, 'saveAnswer']);
 $router->post('/attempts/{id}/submit', [AttemptController::class, 'submit']);
+
+// กู้คืนเมื่อหลุดการเชื่อมต่อ (ลำดับ 41)
+$router->get('/exams/{id}/attempts/active', [AttemptController::class, 'activeAttempt']);
+
+// ตรวจปรนัย มอบหมายงานตรวจอัตนัย ให้คะแนน Rubric และประวัติแก้คะแนน (ลำดับ 42, 43, 45)
+$router->post('/attempts/{id}/grade-objective', [GradingController::class, 'gradeObjective']);
+$router->get('/exams/{id}/grading-assignments', [GradingController::class, 'indexAssignments']);
+$router->post('/exams/{id}/grading-assignments', [GradingController::class, 'assignGrader']);
+$router->post('/grading-assignments/{id}/status', [GradingController::class, 'updateAssignmentStatus']);
+$router->post('/attempt-answers/{id}/rubric-grade', [GradingController::class, 'rubricGrade']);
+$router->get('/attempt-answers/{id}/grading', [GradingController::class, 'showGrading']);
+
+// รายงานคะแนนรายบุคคลและรายวิชา (ลำดับ 46)
+$router->get('/reports/exams/{id}/scores', [ReportStatisticsController::class, 'examScores']);
+$router->get('/reports/courses/{id}/scores', [ReportStatisticsController::class, 'courseScores']);
+
+// สถิติข้อสอบและรอบ run (ลำดับ 47)
+$router->post('/exams/{id}/statistics/calculate', [ReportStatisticsController::class, 'calculateStatistics']);
+$router->get('/exams/{id}/statistics', [ReportStatisticsController::class, 'showStatistics']);
+$router->post('/exam-statistics/{id}/set-current', [ReportStatisticsController::class, 'setCurrentRun']);
+
+// ส่งออกรายงานเป็น CSV และ Excel (ลำดับ 49)
+$router->get('/reports/exams/{id}/export', [ReportStatisticsController::class, 'exportExamScores']);
+
+// ประวัติการทำงาน audit_logs (ลำดับ 50)
+$router->get('/audit-logs', [ReportStatisticsController::class, 'indexAuditLogs']);
