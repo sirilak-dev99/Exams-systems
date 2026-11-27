@@ -98,9 +98,14 @@
         if (!openModal || openModal.querySelector('[aria-busy="true"]')) {
             return;
         }
+        var closed = openModal;
         openModal.classList.remove('is-open');
         document.body.classList.remove('modal-open');
         openModal = null;
+        if (closed === programModal && created) {
+            goToCreated();
+            return;
+        }
         if (lastTrigger) {
             lastTrigger.focus();
         }
@@ -142,49 +147,226 @@
     var programForm  = $('programForm');
     var programError = $('programFormError');
 
+    var created = null;
+
+    function goToCreated() {
+        window.location.href = Api.url('/programs?program=' + created.programId);
+    }
+
+    function startMode() {
+        var picked = programForm.querySelector('input[name="start"]:checked');
+        return picked ? picked.value : 'empty';
+    }
+
+    function lockProgramInfo(locked) {
+        $('pName').readOnly = locked;
+        $('pCode').readOnly = locked;
+        $('pStatus').disabled = locked;
+        $('pVersionNo').readOnly = locked;
+    }
+
     document.addEventListener('click', function (e) {
         var btn = e.target.closest('[data-program-new]');
         if (btn && programModal) {
             programForm.reset();
             clearForm(programForm, programError);
+            lockProgramInfo(false);
+            $('pCopyFields').hidden = true;
+            loadSourceVersions();
             showModal(programModal, btn, $('pName'));
         }
     });
+
+    // ---------- ฉบับต้นทาง ----------
+    function loadSourceVersions() {
+        var programSel = $('pSrcProgram');
+        var versionSel = $('pSrcVersion');
+        var hint       = $('pSrcVersionHint');
+        var id         = programSel.value;
+
+        setFieldError(versionSel, '');
+        versionSel.textContent = '';
+        versionSel.disabled = true;
+        hint.textContent = '';
+        if (!id) {
+            versionSel.appendChild(option('', 'เลือกหลักสูตรก่อน'));
+            return;
+        }
+        versionSel.appendChild(option('', 'กำลังโหลด…'));
+
+        Api.get('/programs/' + encodeURIComponent(id) + '/versions').then(function (res) {
+            if (programSel.value !== id) {
+                return;
+            }
+            versionSel.textContent = '';
+            if (!res.ok) {
+                versionSel.appendChild(option('', 'โหลดฉบับไม่สำเร็จ'));
+                setFieldError(versionSel, res.error.message);
+                return;
+            }
+            var list = (res.data.versions || []).slice().sort(function (a, b) { return b.version_no - a.version_no; });
+            if (!list.length) {
+                versionSel.appendChild(option('', 'ยังไม่มีฉบับ'));
+                hint.textContent = 'หลักสูตรนี้ยังไม่มีฉบับให้คัดลอก';
+                return;
+            }
+            list.forEach(function (v) {
+                versionSel.appendChild(option(v.id_program_versions, 'ฉบับที่ ' + v.version_no + ' · ' + (statusLabels[v.status] || v.status)));
+            });
+            var active = list.filter(function (v) { return v.status === 'active'; })[0] || list[0];
+            versionSel.value = String(active.id_program_versions);
+            versionSel.disabled = false;
+            countSourceCourses();
+        });
+    }
+
+    function countSourceCourses() {
+        var versionSel = $('pSrcVersion');
+        var hint       = $('pSrcVersionHint');
+        var id         = versionSel.value;
+        hint.textContent = '';
+        if (!id) {
+            return;
+        }
+        Api.get('/program-versions/' + encodeURIComponent(id) + '/courses').then(function (res) {
+            if (versionSel.value !== id || !res.ok) {
+                return;
+            }
+            var n = (res.data.courses || []).length;
+            hint.textContent = n ? 'จะคัดลอก ' + n + ' รายวิชา' : 'ฉบับนี้ยังไม่มีรายวิชา';
+        });
+    }
+
+    if (programForm) {
+        programForm.addEventListener('change', function (e) {
+            if (e.target.name === 'start') {
+                $('pCopyFields').hidden = startMode() !== 'copy';
+            } else if (e.target.id === 'pSrcProgram') {
+                setFieldError(e.target, '');
+                loadSourceVersions();
+            } else if (e.target.id === 'pSrcVersion') {
+                setFieldError(e.target, '');
+                countSourceCourses();
+            }
+        });
+    }
+
+    // ---------- บันทึก ----------
+    function copyCourses(sourceVersionId) {
+        return Api.get('/program-versions/' + encodeURIComponent(sourceVersionId) + '/courses').then(function (res) {
+            if (!res.ok) {
+                return { failed: -1, message: res.error.message };
+            }
+            var items  = res.data.courses || [];
+            var failed = 0;
+            var chain  = Promise.resolve();
+            items.forEach(function (c) {
+                chain = chain.then(function () {
+                    return Api.post('/program-versions/' + encodeURIComponent(created.versionId) + '/courses', {
+                        courses_id: c.courses_id,
+                        semester_no: c.semester_no,
+                        year_level: c.year_level
+                    }).then(function (r) {
+                        if (!r.ok && r.error.code !== 'DUPLICATE_BINDING') {
+                            failed++;
+                        }
+                    });
+                });
+            });
+            return chain.then(function () { return { failed: failed, total: items.length }; });
+        });
+    }
 
     if (programForm) {
         programForm.addEventListener('submit', function (e) {
             e.preventDefault();
             clearForm(programForm, programError);
+
             var values = {
                 code: $('pCode').value.trim().toUpperCase(),
                 name: $('pName').value.trim(),
                 status: $('pStatus').value
             };
+            var versionNo = Number($('pVersionNo').value);
+            var copy      = startMode() === 'copy';
+            var sourceId  = $('pSrcVersion').value;
+            var invalid   = [];
+
             if (values.name === '') {
                 setFieldError($('pName'), 'กรุณากรอกชื่อหลักสูตร');
+                invalid.push($('pName'));
             }
             if (values.code === '') {
                 setFieldError($('pCode'), 'กรุณากรอกรหัสหลักสูตร');
+                invalid.push($('pCode'));
             }
-            if (values.name === '' || values.code === '') {
-                (values.name === '' ? $('pName') : $('pCode')).focus();
+            if (!Number.isInteger(versionNo) || versionNo < 1) {
+                setFieldError($('pVersionNo'), 'ฉบับที่ต้องเป็นจำนวนเต็มตั้งแต่ 1 ขึ้นไป');
+                invalid.push($('pVersionNo'));
+            }
+            if (copy && !$('pSrcProgram').value) {
+                setFieldError($('pSrcProgram'), 'กรุณาเลือกหลักสูตรต้นทาง');
+                invalid.push($('pSrcProgram'));
+            } else if (copy && !sourceId) {
+                setFieldError($('pSrcVersion'), 'กรุณาเลือกฉบับที่จะคัดลอก');
+                invalid.push($('pSrcVersion'));
+            }
+            if (invalid.length) {
+                invalid[0].focus();
                 return;
             }
 
             var btn = programForm.querySelector('button[type="submit"]');
             setBusy(btn, true);
-            Api.post('/programs', values).then(function (res) {
+
+            var step = created ? Promise.resolve({ ok: true }) : Api.post('/programs', values).then(function (res) {
                 if (res.ok) {
-                    window.location.href = Api.url('/programs?program=' + res.data.program.id_programs);
+                    created = { programId: res.data.program.id_programs, versionId: null };
+                    lockProgramInfo(true);
+                }
+                return res;
+            });
+
+            step.then(function (res) {
+                if (!res.ok || created.versionId) {
+                    return res;
+                }
+                return Api.post('/programs/' + encodeURIComponent(created.programId) + '/versions', {
+                    version_no: versionNo,
+                    status: values.status
+                }).then(function (r) {
+                    if (r.ok) {
+                        created.versionId = r.data.id_program_versions;
+                    }
+                    return r;
+                });
+            }).then(function (res) {
+                if (!res.ok) {
+                    setBusy(btn, false);
+                    if (res.error.code === 'DUPLICATE_CODE') {
+                        setFieldError($('pCode'), res.error.message);
+                        $('pCode').focus();
+                    } else if (created) {
+                        setAlert(programError, 'สร้างหลักสูตรแล้ว แต่สร้างฉบับไม่สำเร็จ: ' + res.error.message + ' · กดบันทึกอีกครั้งเพื่อลองต่อ');
+                    } else {
+                        setAlert(programError, res.error.message);
+                    }
                     return;
                 }
-                setBusy(btn, false);
-                if (res.error.code === 'DUPLICATE_CODE') {
-                    setFieldError($('pCode'), res.error.message);
-                    $('pCode').focus();
-                } else {
-                    setAlert(programError, res.error.message);
+                if (!copy) {
+                    goToCreated();
+                    return;
                 }
+                return copyCourses(sourceId).then(function (result) {
+                    if (result.failed === 0) {
+                        goToCreated();
+                        return;
+                    }
+                    setBusy(btn, false);
+                    setAlert(programError, result.failed < 0
+                        ? 'สร้างหลักสูตรแล้ว แต่โหลดรายวิชาต้นทางไม่สำเร็จ: ' + result.message + ' · กดบันทึกอีกครั้งเพื่อลองต่อ'
+                        : 'สร้างหลักสูตรแล้ว แต่คัดลอกไม่สำเร็จ ' + result.failed + ' จาก ' + result.total + ' รายวิชา · กดบันทึกอีกครั้งเพื่อลองต่อ');
+                });
             });
         });
     }
