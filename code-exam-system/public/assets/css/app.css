@@ -809,14 +809,14 @@ button.pill { font: inherit; cursor: pointer; }
 
 /* ==================== 21. หน้าเข้าสู่ระบบ ==================== */
 body.layout-auth { background: var(--c-bg); }
-.auth__split { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+.auth { grid-template-columns: 1fr 1fr; }
 .auth__brand {
   position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: 14px;
   padding: 48px 56px; color: #FFF; background: linear-gradient(180deg, var(--c-navy) 0%, var(--c-navy-2) 100%);
 }
 .auth__brand > * { position: relative; z-index: 1; }
 .auth__brand::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 260px; pointer-events: none;
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; width: auto; height: 260px; border: 0; border-radius: 0; pointer-events: none;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 720 260' preserveAspectRatio='none'%3E%3Cpath d='M0 60C220 -10 520 10 720 110V260H0z' fill='%23ffffff' fill-opacity='.06'/%3E%3Cpath d='M0 140C240 90 520 110 720 190V260H0z' fill='%23ffffff' fill-opacity='.06'/%3E%3C/svg%3E") no-repeat bottom / 100% 100%;
 }
 .auth__brand svg { stroke-width: 1.6; }
@@ -834,4 +834,4 @@ body.layout-auth { background: var(--c-bg); }
 .auth__or { display: flex; align-items: center; gap: 12px; color: var(--c-muted); font-size: 14px; }
 .auth__or::before, .auth__or::after { content: ""; flex: 1; border-top: 1px dashed #B9AEDB; }
 .auth__help { font-size: 15px; color: var(--c-text-2); }
-@media (max-width: 900px) { .auth__split { grid-template-columns: 1fr; } .auth__brand { padding: 36px 24px; } .auth__brand h1 { font-size: 28px; } }
+@media (max-width: 900px) { .auth { grid-template-columns: 1fr; } .auth__brand { padding: 36px 24px; } .auth__brand h1 { font-size: 28px; } }
