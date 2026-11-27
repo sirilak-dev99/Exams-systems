@@ -8,14 +8,6 @@ require dirname(__DIR__) . '/includes/header.php';
 // ---------- ข้อความ ----------
 $statusLabels = ['active' => 'ใช้งาน', 'inactive' => 'ปิดใช้งาน', 'archived' => 'จัดเก็บแล้ว'];
 
-// ---------- ตัวกรอง ----------
-$status   = (string)($_GET['status'] ?? '');
-$status   = isset($statusLabels[$status]) ? $status : '';
-$pageUrl  = static function (array $query) use ($appUrl): string {
-    $query = array_filter($query, static fn ($v) => $v !== '' && $v !== null);
-    return $appUrl . '/programs' . ($query ? '?' . http_build_query($query) : '');
-};
-
 // ---------- หลักสูตรที่เลือก ----------
 $selectedId = (int)($_GET['program'] ?? 0);
 $selected   = null;
@@ -26,61 +18,50 @@ foreach ($programs as $p) {
     }
 }
 $selected = $selected ?? ($programs[0] ?? null);
-
-// ---------- ลิงก์หน้าอื่น ----------
-$links = array_filter([
-    ['/course-groups', 'กลุ่มวิชา', Security::hasPermission('course.manage')],
-    ['/courses', 'รายวิชาทั้งหมด', Security::hasPermission('course.view')],
-    ['/academic-terms', 'ภาคการศึกษา', Security::hasPermission('course.view')],
-    ['/course-offerings', 'เปิดสอนรายวิชา', Security::hasPermission('course.view')],
-], static fn ($l) => $l[2]);
+$termId   = (int)($_GET['term'] ?? 0);
+$cardUrl  = static function (int $programId) use ($appUrl, $termId): string {
+    return $appUrl . '/programs?' . http_build_query(array_filter(['program' => $programId, 'term' => $termId ?: null]));
+};
 ?>
 <?php /* ---------- แบนเนอร์ ---------- */ ?>
 <section class="greet hub-hero" aria-label="หลักสูตรและรายวิชา">
+    <svg class="hub-hero__deco" aria-hidden="true" width="240" height="150" viewBox="180 20 280 160"><path d="M418 34h10v12h12v10h-12v12h-10V56h-12V46h12z" fill="#CDB9F0"/><path d="M120 40h7v9h9v7h-9v9h-7v-9h-9v-7h9z" fill="#D8C8F4"/></svg>
     <span class="dash-hero__icon"><?= ui_icon('school', 64) ?></span>
     <div class="greet__text">
         <h1>หลักสูตรและรายวิชา</h1>
-        <p>ทุกหลักสูตรของคณะ · เปิดภาคการศึกษา จัดรายวิชา กลุ่มเรียน และผู้สอน</p>
-        <?php if ($links): ?>
-            <nav class="hub-hero__links" aria-label="หน้าที่เกี่ยวข้อง">
-                <?php foreach ($links as [$href, $label]): ?>
-                    <a href="<?= Security::escape($appUrl . $href) ?>"><?= Security::escape($label) ?></a>
-                <?php endforeach; ?>
-            </nav>
-        <?php endif; ?>
+        <p>ทุกหลักสูตรของคณะ · เปิดภาคการศึกษา จัดรายวิชา กลุ่มเรียน ผู้สอน และรายชื่อนิสิต</p>
     </div>
     <div class="hub-hero__actions">
         <button class="btn btn--primary" type="button" data-program-new>+ เพิ่มหลักสูตร</button>
     </div>
 </section>
 
-<?php /* ---------- ตัวกรองสถานะ ---------- */ ?>
-<section class="card pill-bar" aria-label="สถานะหลักสูตร">
-    <span class="pill-bar__label">สถานะ</span>
-    <div class="pills">
-        <a class="pill" href="<?= Security::escape($pageUrl([])) ?>"<?= $status === '' ? ' aria-current="page"' : '' ?>>ทุกสถานะ</a>
-        <?php foreach ($statusLabels as $value => $label): ?>
-            <a class="pill" href="<?= Security::escape($pageUrl(['status' => $value])) ?>"<?= $status === $value ? ' aria-current="page"' : '' ?>><?= Security::escape($label) ?></a>
-        <?php endforeach; ?>
+<?php /* ---------- ภาคการศึกษา ---------- */ ?>
+<section class="card pill-bar" aria-label="ภาคการศึกษา">
+    <span class="pill-bar__label">ภาคการศึกษา</span>
+    <div class="pills" role="radiogroup" aria-label="เลือกภาคการศึกษา" id="termPills" data-term="<?= $termId ?: '' ?>">
+        <span class="muted">กำลังโหลด…</span>
+    </div>
+    <div class="pill-bar__actions">
+        <a class="btn btn--secondary" href="<?= Security::escape($appUrl) ?>/academic-terms">เปิดภาค / ปีการศึกษาใหม่</a>
+        <a class="btn btn--danger-outline" href="<?= Security::escape($appUrl) ?>/academic-terms">ปิดภาคการศึกษา</a>
     </div>
 </section>
 
 <?php if (!$programs): ?>
     <section class="card">
-        <div class="empty"><?= ui_icon('inbox', 40) ?><b><?= $status !== '' ? 'ไม่พบหลักสูตรที่ตรงกับเงื่อนไข' : 'ยังไม่มีหลักสูตร' ?></b></div>
+        <div class="empty"><?= ui_icon('inbox', 40) ?><b>ยังไม่มีหลักสูตร</b></div>
     </section>
 <?php else: ?>
     <?php /* ---------- การ์ดหลักสูตร ---------- */ ?>
-    <ul class="program-cards" aria-label="หลักสูตรทั้งหมด">
+    <div class="program-cards" role="list" aria-label="หลักสูตรทั้งหมด">
         <?php foreach ($programs as $p): ?>
-            <li>
-                <a class="program-card" href="<?= Security::escape($pageUrl(['status' => $status, 'program' => (int)$p['id_programs']])) ?>"<?= (int)$p['id_programs'] === (int)$selected['id_programs'] ? ' aria-current="page"' : '' ?>>
-                    <b><?= Security::escape((string)$p['name']) ?></b>
-                    <small><?= Security::escape((string)$p['code']) ?> · <?= (int)$p['versions_count'] ?> ฉบับ · <?= Security::escape($statusLabels[$p['status']] ?? (string)$p['status']) ?></small>
-                </a>
-            </li>
+            <a role="listitem" class="program-card" href="<?= Security::escape($cardUrl((int)$p['id_programs'])) ?>" data-program-card="<?= (int)$p['id_programs'] ?>" data-status="<?= Security::escape((string)$p['status']) ?>"<?= (int)$p['id_programs'] === (int)$selected['id_programs'] ? ' aria-current="page"' : '' ?>>
+                <b><?= Security::escape((string)$p['name']) ?></b>
+                <small><?= (int)$p['versions_count'] ?> ฉบับ · <?= Security::escape($statusLabels[$p['status']] ?? (string)$p['status']) ?></small>
+            </a>
         <?php endforeach; ?>
-    </ul>
+    </div>
 
     <?php /* ---------- หลักสูตรที่เลือก ---------- */ ?>
     <section class="card panel" id="programPanel"
@@ -90,7 +71,11 @@ $links = array_filter([
              data-status="<?= Security::escape((string)$selected['status']) ?>">
         <div class="panel__head">
             <h2><?= Security::escape((string)$selected['name']) ?></h2>
-            <span class="badge badge--<?= Security::escape((string)$selected['status']) ?>"><?= Security::escape($statusLabels[$selected['status']] ?? (string)$selected['status']) ?></span>
+            <?php if ($selected['status'] === 'active'): ?>
+                <span class="badge badge--solid-success">แสดงอยู่</span>
+            <?php else: ?>
+                <span class="badge badge--<?= Security::escape((string)$selected['status']) ?>"><?= Security::escape($statusLabels[$selected['status']] ?? (string)$selected['status']) ?></span>
+            <?php endif; ?>
         </div>
         <span class="panel__sub" id="programSub">รหัส <?= Security::escape((string)$selected['code']) ?> · <?= Security::escape($statusLabels[$selected['status']] ?? (string)$selected['status']) ?></span>
 
@@ -283,7 +268,7 @@ $links = array_filter([
             <span class="field__error" id="cExistingError" hidden></span>
         </div>
 
-        <div class="form-grid" id="courseNewFields">
+        <div class="form-grid course-form__top" id="courseNewFields">
             <div class="field">
                 <label class="field__label" for="cCode">รหัสวิชา<span class="req">*</span></label>
                 <input class="input" id="cCode" name="code" maxlength="20" autocomplete="off" aria-describedby="cCodeError">
@@ -294,14 +279,9 @@ $links = array_filter([
                 <input class="input" id="cName" name="name" maxlength="150" autocomplete="off" aria-describedby="cNameError">
                 <span class="field__error" id="cNameError" hidden></span>
             </div>
-            <div class="field span-2">
-                <label class="field__label" for="cGroup">กลุ่มวิชา<span class="req">*</span></label>
-                <select class="select" id="cGroup" name="course_groups_id" aria-describedby="cGroupError"></select>
-                <span class="field__error" id="cGroupError" hidden></span>
-            </div>
         </div>
 
-        <div class="form-grid">
+        <div class="form-grid form-grid--4">
             <div class="field">
                 <label class="field__label" for="cYear">ชั้นปี</label>
                 <select class="select" id="cYear" name="year_level">
@@ -316,9 +296,16 @@ $links = array_filter([
                     <?php for ($s = 1; $s <= 3; $s++): ?><option value="<?= $s ?>">ภาค <?= $s ?></option><?php endfor; ?>
                 </select>
             </div>
+            <div class="field span-2" id="courseGroupField">
+                <label class="field__label" for="cGroup">กลุ่มวิชา<span class="req">*</span></label>
+                <select class="select" id="cGroup" name="course_groups_id" aria-describedby="cGroupError"></select>
+                <span class="field__error" id="cGroupError" hidden></span>
+            </div>
         </div>
 
-        <div class="modal__foot">
+        <div class="modal__foot modal__foot--split">
+            <button class="btn btn--danger-outline" type="button" id="courseRemoveBtn" hidden>นำออกจากหลักสูตร</button>
+            <span class="grow"></span>
             <button class="btn btn--ghost" type="button" data-modal-close>ยกเลิก</button>
             <button class="btn btn--primary" type="submit">บันทึกรายวิชา</button>
         </div>
