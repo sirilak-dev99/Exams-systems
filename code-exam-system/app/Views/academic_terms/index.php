@@ -1,7 +1,7 @@
 <?php
 // ---------- ค่าพื้นฐาน ----------
 $academicTerms = $academicTerms ?? [];
-$pageTitle     = 'ภาคการศึกษา';
+$pageTitle     = 'หลักสูตรและรายวิชา';
 require dirname(__DIR__) . '/includes/header.php';
 
 // ---------- ตัวกรอง ----------
@@ -12,13 +12,7 @@ $filtered = $year !== '' || $status !== '';
 // ---------- ข้อความ ----------
 $statusLabels = ['active' => 'ภาคปัจจุบัน', 'upcoming' => 'ภาคถัดไป', 'inactive' => 'ปิดใช้งาน', 'archived' => 'จัดเก็บแล้ว'];
 ?>
-<?php /* ---------- หัวข้อ ---------- */ ?>
-<div class="page-head">
-    <div class="page-head__text">
-        <h1>ภาคการศึกษา</h1>
-        <p>ปีการศึกษา ภาคเรียน และช่วงวันเปิด–ปิดภาค</p>
-    </div>
-</div>
+<?php $catalogTab = '/academic-terms'; require dirname(__DIR__) . '/includes/catalog-tabs.php'; ?>
 
 <section class="card card--flush">
     <?php /* ---------- ตัวกรอง ---------- */ ?>

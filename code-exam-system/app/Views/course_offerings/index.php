@@ -1,7 +1,7 @@
 <?php
 // ---------- ค่าพื้นฐาน ----------
 $courseOfferings = $courseOfferings ?? [];
-$pageTitle       = 'เปิดสอนรายวิชา';
+$pageTitle       = 'หลักสูตรและรายวิชา';
 require dirname(__DIR__) . '/includes/header.php';
 
 // ---------- ตัวกรอง ----------
@@ -23,13 +23,7 @@ $percent = function ($value): string {
     return rtrim(rtrim(number_format((float)$value, 2, '.', ''), '0'), '.') . '%';
 };
 ?>
-<?php /* ---------- หัวข้อ ---------- */ ?>
-<div class="page-head">
-    <div class="page-head__text">
-        <h1>เปิดสอนรายวิชา</h1>
-        <p>รายวิชาที่เปิดสอนในแต่ละภาคการศึกษา และจำนวนกลุ่มเรียน</p>
-    </div>
-</div>
+<?php $catalogTab = '/course-offerings'; require dirname(__DIR__) . '/includes/catalog-tabs.php'; ?>
 
 <section class="card card--flush">
     <?php /* ---------- ตัวกรอง ---------- */ ?>

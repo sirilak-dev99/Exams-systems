@@ -1,7 +1,7 @@
 <?php
 // ---------- ค่าพื้นฐาน ----------
 $programs  = $programs ?? [];
-$pageTitle = 'หลักสูตร';
+$pageTitle = 'หลักสูตรและรายวิชา';
 require dirname(__DIR__) . '/includes/header.php';
 
 // ---------- ตัวกรอง ----------
@@ -11,13 +11,7 @@ $filtered = $status !== '';
 // ---------- ข้อความ ----------
 $statusLabels = ['active' => 'ใช้งาน', 'inactive' => 'ปิดใช้งาน', 'archived' => 'จัดเก็บแล้ว'];
 ?>
-<?php /* ---------- หัวข้อ ---------- */ ?>
-<div class="page-head">
-    <div class="page-head__text">
-        <h1>หลักสูตร</h1>
-        <p>หลักสูตรของคณะ และจำนวนรุ่นหลักสูตร</p>
-    </div>
-</div>
+<?php $catalogTab = '/programs'; require dirname(__DIR__) . '/includes/catalog-tabs.php'; ?>
 
 <section class="card card--flush">
     <?php /* ---------- ตัวกรอง ---------- */ ?>

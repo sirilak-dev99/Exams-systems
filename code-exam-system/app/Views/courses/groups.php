@@ -1,20 +1,14 @@
 <?php
 // ---------- ค่าพื้นฐาน ----------
 $courseGroups = $courseGroups ?? [];
-$pageTitle    = 'กลุ่มวิชา';
+$pageTitle    = 'หลักสูตรและรายวิชา';
 require dirname(__DIR__) . '/includes/header.php';
 
 // ---------- ตัวกรอง ----------
 $q        = trim((string)($_GET['q'] ?? ''));
 $filtered = $q !== '';
 ?>
-<?php /* ---------- หัวข้อ ---------- */ ?>
-<div class="page-head">
-    <div class="page-head__text">
-        <h1>กลุ่มวิชา</h1>
-        <p>กลุ่มวิชาและจำนวนรายวิชาในแต่ละกลุ่ม</p>
-    </div>
-</div>
+<?php $catalogTab = '/course-groups'; require dirname(__DIR__) . '/includes/catalog-tabs.php'; ?>
 
 <section class="card card--flush">
     <?php /* ---------- ตัวกรอง ---------- */ ?>

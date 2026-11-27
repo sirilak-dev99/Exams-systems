@@ -1,7 +1,7 @@
 <?php
 // ---------- ค่าพื้นฐาน ----------
 $courses   = $courses ?? [];
-$pageTitle = 'รายวิชา';
+$pageTitle = 'หลักสูตรและรายวิชา';
 require dirname(__DIR__) . '/includes/header.php';
 
 // ---------- ตัวกรอง ----------
@@ -13,13 +13,7 @@ foreach ($courses as $c) {
     $groupOptions[(int)$c['course_groups_id']] = (string)$c['course_group_name'];
 }
 ?>
-<?php /* ---------- หัวข้อ ---------- */ ?>
-<div class="page-head">
-    <div class="page-head__text">
-        <h1>รายวิชา</h1>
-        <p>รายวิชาทั้งหมดในระบบ แยกตามกลุ่มวิชา</p>
-    </div>
-</div>
+<?php $catalogTab = '/courses'; require dirname(__DIR__) . '/includes/catalog-tabs.php'; ?>
 
 <section class="card card--flush">
     <?php /* ---------- ตัวกรอง ---------- */ ?>
