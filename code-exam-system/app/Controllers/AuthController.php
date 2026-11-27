@@ -126,7 +126,7 @@ final class AuthController extends Controller
             return;
         }
 
-        $this->redirect('/login');   // route หน้า Login คือ GET /login (เดิม 'auth/login' ไม่มี route → 404)
+        $this->redirect('auth/login');
     }
 
     private function respondLoginError(bool $isJson, int $status, string $code, string $message, string $identifier): void
