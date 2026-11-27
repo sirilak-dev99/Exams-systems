@@ -44,7 +44,7 @@ $statusLabels = ['active' => 'ใช้งาน', 'inactive' => 'ปิดใ�
                     <tr>
                         <th scope="col">รหัสหลักสูตร</th>
                         <th scope="col">ชื่อหลักสูตร</th>
-                        <th scope="col" class="num">จำนวนรุ่น</th>
+                        <th scope="col" class="num">จำนวนฉบับ</th>
                         <th scope="col">สถานะ</th>
                         <th scope="col"><span class="sr-only">จัดการ</span></th>
                     </tr>
@@ -57,6 +57,11 @@ $statusLabels = ['active' => 'ใช้งาน', 'inactive' => 'ปิดใ�
                             <td class="num"><?= (int)$p['versions_count'] ?></td>
                             <td><span class="badge badge--<?= Security::escape((string)$p['status']) ?>"><?= Security::escape($statusLabels[$p['status']] ?? (string)$p['status']) ?></span></td>
                             <td class="nowrap">
+                                <button class="btn btn--secondary btn--sm" type="button" data-program-versions
+                                        data-id="<?= (int)$p['id_programs'] ?>"
+                                        data-code="<?= Security::escape((string)$p['code']) ?>"
+                                        data-name="<?= Security::escape((string)$p['name']) ?>"
+                                        aria-label="ฉบับหลักสูตรของ <?= Security::escape((string)$p['name']) ?>">ฉบับหลักสูตร</button>
                                 <button class="btn btn--ghost btn--sm" type="button" data-program-edit
                                         data-id="<?= (int)$p['id_programs'] ?>"
                                         data-code="<?= Security::escape((string)$p['code']) ?>"
@@ -110,5 +115,55 @@ $statusLabels = ['active' => 'ใช้งาน', 'inactive' => 'ปิดใ�
             <button class="btn btn--primary" type="submit">บันทึก</button>
         </div>
     </form>
+</div>
+
+<?php /* ---------- ฉบับหลักสูตร ---------- */ ?>
+<div class="modal" id="versionModal" role="dialog" aria-modal="true" aria-labelledby="versionModalTitle">
+    <div class="modal__box modal__box--lg">
+        <div class="modal__head">
+            <div class="grow">
+                <h2 id="versionModalTitle">ฉบับหลักสูตร</h2>
+                <p class="muted" id="versionModalSub"></p>
+            </div>
+            <button class="modal__close" type="button" data-modal-close aria-label="ปิด">✕</button>
+        </div>
+
+        <div id="versionList" aria-live="polite">
+            <p class="muted">กำลังโหลด…</p>
+        </div>
+
+        <form class="form-section" id="versionForm" novalidate>
+            <div class="form-section__head"><h3>เพิ่มฉบับใหม่</h3></div>
+            <div class="alert alert--danger" id="versionFormError" role="alert" hidden><b></b></div>
+            <div class="form-grid">
+                <div class="field">
+                    <label class="field__label" for="vNo">ฉบับที่<span class="req">*</span></label>
+                    <input class="input" id="vNo" name="version_no" type="number" min="1" step="1" required aria-describedby="vNoError">
+                    <span class="field__error" id="vNoError" hidden></span>
+                </div>
+                <div class="field">
+                    <label class="field__label" for="vStatus">สถานะ</label>
+                    <select class="select" id="vStatus" name="status">
+                        <?php foreach ($statusLabels as $value => $label): ?>
+                            <option value="<?= Security::escape($value) ?>"><?= Security::escape($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="field__label" for="vFrom">เริ่มใช้</label>
+                    <input class="input" id="vFrom" name="effective_from" type="date">
+                </div>
+                <div class="field">
+                    <label class="field__label" for="vTo">สิ้นสุด</label>
+                    <input class="input" id="vTo" name="effective_to" type="date" aria-describedby="vToError">
+                    <span class="field__error" id="vToError" hidden></span>
+                </div>
+            </div>
+            <div class="modal__foot">
+                <button class="btn btn--ghost" type="button" data-modal-close>ปิด</button>
+                <button class="btn btn--primary" type="submit">เพิ่มฉบับ</button>
+            </div>
+        </form>
+    </div>
 </div>
 <?php require dirname(__DIR__) . '/includes/footer.php'; ?>
