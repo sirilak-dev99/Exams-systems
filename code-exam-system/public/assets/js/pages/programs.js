@@ -9,6 +9,10 @@
     var statusLabels = { active: 'ใช้งาน', inactive: 'ปิดใช้งาน', archived: 'จัดเก็บแล้ว' };
 
     // ---------- ตัวช่วย ----------
+    function $(id) {
+        return document.getElementById(id);
+    }
+
     function el(tag, className, text) {
         var node = document.createElement(tag);
         if (className) {
@@ -38,7 +42,7 @@
     }
 
     function setFieldError(input, message) {
-        var box = document.getElementById(input.id + 'Error');
+        var box = $(input.id + 'Error');
         input.setAttribute('aria-invalid', message ? 'true' : 'false');
         if (box) {
             box.textContent = message || '';
@@ -51,15 +55,40 @@
         box.hidden = !message;
     }
 
+    function clearForm(form, alertBox) {
+        form.querySelectorAll('[aria-invalid]').forEach(function (input) {
+            setFieldError(input, '');
+        });
+        setAlert(alertBox, '');
+    }
+
+    function messageBox(container, text, kind) {
+        container.textContent = '';
+        if (kind === 'error') {
+            var alert = el('div', 'alert alert--danger');
+            alert.setAttribute('role', 'alert');
+            alert.appendChild(el('b', '', text));
+            container.appendChild(alert);
+        } else {
+            var empty = el('div', 'empty');
+            empty.appendChild(el('b', '', text));
+            container.appendChild(empty);
+        }
+    }
+
+    function option(value, label) {
+        var o = el('option', '', label);
+        o.value = value;
+        return o;
+    }
+
     // ---------- หน้าต่าง ----------
     var openModal = null;
     var lastTrigger = null;
-    var onClose = null;
 
-    function showModal(modal, trigger, focusTarget, closeHandler) {
+    function showModal(modal, trigger, focusTarget) {
         openModal = modal;
         lastTrigger = trigger;
-        onClose = closeHandler || null;
         modal.classList.add('is-open');
         document.body.classList.add('modal-open');
         (focusTarget || modal.querySelector('input, select, button')).focus();
@@ -72,9 +101,6 @@
         openModal.classList.remove('is-open');
         document.body.classList.remove('modal-open');
         openModal = null;
-        if (onClose) {
-            onClose();
-        }
         if (lastTrigger) {
             lastTrigger.focus();
         }
@@ -89,7 +115,10 @@
             return;
         }
         if (e.key === 'Tab') {
-            var items = openModal.querySelectorAll('button:not([disabled]), input:not([type="hidden"]), select');
+            var items = Array.prototype.filter.call(
+                openModal.querySelectorAll('button:not([disabled]), input:not([type="hidden"]), select'),
+                function (n) { return n.offsetParent !== null; }
+            );
             var first = items[0];
             var last  = items[items.length - 1];
             if (e.shiftKey && document.activeElement === first) {
@@ -102,61 +131,57 @@
         }
     });
 
-    // ---------- ฟอร์มหลักสูตร ----------
-    var programModal = document.getElementById('programModal');
-    var programForm  = document.getElementById('programForm');
-    var programTitle = document.getElementById('programModalTitle');
-    var programError = document.getElementById('programFormError');
-    var pf = programForm ? programForm.elements : null;
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('[data-modal-close]') || (openModal && e.target === openModal)) {
+            hideModal();
+        }
+    });
 
-    function openProgram(trigger, program) {
-        programForm.reset();
-        setFieldError(pf.code, '');
-        setFieldError(pf.name, '');
-        setAlert(programError, '');
-        pf.id.value     = program ? program.id : '';
-        pf.code.value   = program ? program.code : '';
-        pf.name.value   = program ? program.name : '';
-        pf.status.value = program ? program.status : 'active';
-        programTitle.textContent = program ? programTitle.dataset.titleEdit : programTitle.dataset.titleNew;
-        showModal(programModal, trigger, pf.code);
-    }
+    // ---------- เพิ่มหลักสูตร ----------
+    var programModal = $('programModal');
+    var programForm  = $('programForm');
+    var programError = $('programFormError');
+
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-program-new]');
+        if (btn && programModal) {
+            programForm.reset();
+            clearForm(programForm, programError);
+            showModal(programModal, btn, $('pName'));
+        }
+    });
 
     if (programForm) {
         programForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            setFieldError(pf.code, '');
-            setFieldError(pf.name, '');
-            setAlert(programError, '');
-
-            var id = pf.id.value;
+            clearForm(programForm, programError);
             var values = {
-                code: pf.code.value.trim().toUpperCase(),
-                name: pf.name.value.trim(),
-                status: pf.status.value
+                code: $('pCode').value.trim().toUpperCase(),
+                name: $('pName').value.trim(),
+                status: $('pStatus').value
             };
-            if (values.code === '') {
-                setFieldError(pf.code, 'กรุณากรอกรหัสหลักสูตร');
-            }
             if (values.name === '') {
-                setFieldError(pf.name, 'กรุณากรอกชื่อหลักสูตร');
+                setFieldError($('pName'), 'กรุณากรอกชื่อหลักสูตร');
             }
-            if (values.code === '' || values.name === '') {
-                (values.code === '' ? pf.code : pf.name).focus();
+            if (values.code === '') {
+                setFieldError($('pCode'), 'กรุณากรอกรหัสหลักสูตร');
+            }
+            if (values.name === '' || values.code === '') {
+                (values.name === '' ? $('pName') : $('pCode')).focus();
                 return;
             }
 
-            var submitBtn = programForm.querySelector('button[type="submit"]');
-            setBusy(submitBtn, true);
-            Api.post(id ? '/programs/' + encodeURIComponent(id) : '/programs', values).then(function (res) {
+            var btn = programForm.querySelector('button[type="submit"]');
+            setBusy(btn, true);
+            Api.post('/programs', values).then(function (res) {
                 if (res.ok) {
-                    window.location.reload();
+                    window.location.href = Api.url('/programs?program=' + res.data.program.id_programs);
                     return;
                 }
-                setBusy(submitBtn, false);
+                setBusy(btn, false);
                 if (res.error.code === 'DUPLICATE_CODE') {
-                    setFieldError(pf.code, res.error.message);
-                    pf.code.focus();
+                    setFieldError($('pCode'), res.error.message);
+                    $('pCode').focus();
                 } else {
                     setAlert(programError, res.error.message);
                 }
@@ -164,26 +189,88 @@
         });
     }
 
-    // ---------- ฉบับหลักสูตร ----------
-    var versionModal = document.getElementById('versionModal');
-    var versionForm  = document.getElementById('versionForm');
-    var versionList  = document.getElementById('versionList');
-    var versionSub   = document.getElementById('versionModalSub');
-    var versionError = document.getElementById('versionFormError');
-    var vf = versionForm ? versionForm.elements : null;
-    var currentProgramId = null;
-    var versionsChanged = false;
+    // ---------- หลักสูตรที่เลือก ----------
+    var panel = $('programPanel');
+    if (!panel) {
+        return;
+    }
+    var programId = panel.dataset.id;
 
-    function renderVersions(versions) {
-        versionList.textContent = '';
-        if (!versions.length) {
-            var empty = el('div', 'empty');
-            empty.appendChild(el('b', '', 'ยังไม่มีฉบับหลักสูตร'));
-            versionList.appendChild(empty);
+    // ---------- แท็บ ----------
+    var tabs = Array.prototype.slice.call(panel.querySelectorAll('[role="tab"]'));
+
+    function selectTab(tab) {
+        tabs.forEach(function (t) {
+            var on = t === tab;
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+            t.tabIndex = on ? 0 : -1;
+            $(t.getAttribute('aria-controls')).hidden = !on;
+        });
+        tab.focus();
+    }
+
+    tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { selectTab(tab); });
+        tab.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                selectTab(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]);
+            }
+        });
+    });
+
+    // ---------- ตั้งค่าหลักสูตร ----------
+    var settingsForm  = $('settingsForm');
+    var settingsError = $('settingsFormError');
+
+    settingsForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearForm(settingsForm, settingsError);
+        var values = {
+            code: $('sCode').value.trim().toUpperCase(),
+            name: $('sName').value.trim(),
+            status: $('sStatus').value
+        };
+        if (values.name === '') {
+            setFieldError($('sName'), 'กรุณากรอกชื่อหลักสูตร');
+        }
+        if (values.code === '') {
+            setFieldError($('sCode'), 'กรุณากรอกรหัสหลักสูตร');
+        }
+        if (values.name === '' || values.code === '') {
+            (values.name === '' ? $('sName') : $('sCode')).focus();
             return;
         }
 
-        var wrap  = el('div', 'table-wrap');
+        var btn = settingsForm.querySelector('button[type="submit"]');
+        setBusy(btn, true);
+        Api.post('/programs/' + encodeURIComponent(programId), values).then(function (res) {
+            if (res.ok) {
+                window.location.reload();
+                return;
+            }
+            setBusy(btn, false);
+            if (res.error.code === 'DUPLICATE_CODE') {
+                setFieldError($('sCode'), res.error.message);
+                $('sCode').focus();
+            } else {
+                setAlert(settingsError, res.error.message);
+            }
+        });
+    });
+
+    // ---------- ฉบับหลักสูตร ----------
+    var versionForm  = $('versionForm');
+    var versionError = $('versionFormError');
+    var versions = [];
+
+    function renderVersions() {
+        var list = $('versionList');
+        if (!versions.length) {
+            messageBox(list, 'ยังไม่มีฉบับหลักสูตร');
+            return;
+        }
+        list.textContent = '';
         var table = el('table', 'table');
         var head  = el('tr');
         ['ฉบับที่', 'เริ่มใช้', 'สิ้นสุด', 'สถานะ'].forEach(function (label) {
@@ -192,7 +279,6 @@
             head.appendChild(th);
         });
         table.appendChild(el('thead')).appendChild(head);
-
         var body = table.appendChild(el('tbody'));
         versions.forEach(function (v) {
             var tr = el('tr');
@@ -204,116 +290,409 @@
             tr.appendChild(td);
             body.appendChild(tr);
         });
-
-        wrap.appendChild(table);
-        versionList.appendChild(wrap);
+        list.appendChild(el('div', 'table-wrap')).appendChild(table);
     }
 
-    function nextVersionNo(versions) {
-        return versions.reduce(function (max, v) {
-            return Math.max(max, parseInt(v.version_no, 10) || 0);
-        }, 0) + 1;
+    function fillVersionSelect(keepId) {
+        var select = $('courseVersion');
+        select.textContent = '';
+        versions.forEach(function (v) {
+            select.appendChild(option(v.id_program_versions, 'ฉบับที่ ' + v.version_no + ' · ' + (statusLabels[v.status] || v.status)));
+        });
+        var current = versions.filter(function (v) { return String(v.id_program_versions) === String(keepId); })[0]
+            || versions.filter(function (v) { return v.status === 'active'; })[0]
+            || versions[0];
+        select.disabled = !versions.length;
+        if (current) {
+            select.value = current.id_program_versions;
+        }
     }
 
-    function loadVersions() {
-        versionList.textContent = '';
-        versionList.appendChild(el('p', 'muted', 'กำลังโหลด…'));
-        return Api.get('/programs/' + encodeURIComponent(currentProgramId) + '/versions').then(function (res) {
+    function loadVersions(keepId) {
+        return Api.get('/programs/' + encodeURIComponent(programId) + '/versions').then(function (res) {
             if (!res.ok) {
-                versionList.textContent = '';
-                var alert = el('div', 'alert alert--danger');
-                alert.setAttribute('role', 'alert');
-                alert.appendChild(el('b', '', res.error.message));
-                versionList.appendChild(alert);
-                return;
+                messageBox($('versionList'), res.error.message, 'error');
+                messageBox($('courseTable'), res.error.message, 'error');
+                return false;
             }
-            var versions = res.data.versions || [];
-            renderVersions(versions);
-            vf.version_no.value = nextVersionNo(versions);
+            versions = res.data.versions || [];
+            renderVersions();
+            fillVersionSelect(keepId);
+            $('tabVersions').textContent = 'ฉบับหลักสูตร (' + versions.length + ')';
+            $('vNo').value = versions.reduce(function (max, v) {
+                return Math.max(max, parseInt(v.version_no, 10) || 0);
+            }, 0) + 1;
+            return true;
         });
     }
 
-    function openVersions(trigger) {
-        currentProgramId = trigger.dataset.id;
-        versionsChanged = false;
-        versionForm.reset();
-        setFieldError(vf.version_no, '');
-        setFieldError(vf.effective_to, '');
-        setAlert(versionError, '');
-        versionSub.textContent = trigger.dataset.code + ' · ' + trigger.dataset.name;
-        showModal(versionModal, trigger, versionModal.querySelector('.modal__close'), function () {
-            if (versionsChanged) {
-                window.location.reload();
+    versionForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearForm(versionForm, versionError);
+        var values = {
+            version_no: parseInt($('vNo').value, 10),
+            status: $('vStatus').value,
+            effective_from: $('vFrom').value,
+            effective_to: $('vTo').value
+        };
+        if (!(values.version_no >= 1)) {
+            setFieldError($('vNo'), 'กรุณาระบุฉบับที่เป็นตัวเลขตั้งแต่ 1 ขึ้นไป');
+            $('vNo').focus();
+            return;
+        }
+        if (values.effective_from && values.effective_to && values.effective_to < values.effective_from) {
+            setFieldError($('vTo'), 'วันสิ้นสุดต้องไม่ก่อนวันเริ่มใช้');
+            $('vTo').focus();
+            return;
+        }
+
+        var btn = versionForm.querySelector('button[type="submit"]');
+        setBusy(btn, true);
+        Api.post('/programs/' + encodeURIComponent(programId) + '/versions', values).then(function (res) {
+            setBusy(btn, false);
+            if (res.ok) {
+                versionForm.reset();
+                loadVersions($('courseVersion').value).then(loadCourses);
+                return;
+            }
+            if (res.error.code === 'DUPLICATE_VERSION') {
+                setFieldError($('vNo'), 'ฉบับที่ ' + values.version_no + ' มีอยู่แล้วในหลักสูตรนี้');
+                $('vNo').focus();
+            } else if (res.error.code === 'INVALID_DATE_RANGE') {
+                setFieldError($('vTo'), 'วันสิ้นสุดต้องไม่ก่อนวันเริ่มใช้');
+                $('vTo').focus();
+            } else {
+                setAlert(versionError, res.error.message);
             }
         });
-        loadVersions();
+    });
+
+    // ---------- รายวิชา ----------
+    var allCourses = [];
+    var courseById = {};
+    var groups = null;
+    var bindings = [];
+
+    function loadCatalog() {
+        return Promise.all([Api.get('/courses'), Api.get('/course-groups')]).then(function (r) {
+            allCourses = r[0].ok ? (r[0].data.courses || []) : [];
+            courseById = {};
+            allCourses.forEach(function (c) { courseById[c.id_courses] = c; });
+            groups = r[1].ok ? (r[1].data.course_groups || []) : null;
+        });
     }
 
-    if (versionForm) {
-        versionForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            setFieldError(vf.version_no, '');
-            setFieldError(vf.effective_to, '');
-            setAlert(versionError, '');
+    function yearSemLabel(b) {
+        var parts = [];
+        if (b.year_level) {
+            parts.push('ปี ' + b.year_level);
+        }
+        if (b.semester_no) {
+            parts.push('ภาค ' + b.semester_no);
+        }
+        return parts.length ? parts.join(' · ') : '—';
+    }
 
-            var values = {
-                version_no: parseInt(vf.version_no.value, 10),
-                status: vf.status.value,
-                effective_from: vf.effective_from.value,
-                effective_to: vf.effective_to.value
-            };
-            if (!(values.version_no >= 1)) {
-                setFieldError(vf.version_no, 'กรุณาระบุฉบับที่เป็นตัวเลขตั้งแต่ 1 ขึ้นไป');
-                vf.version_no.focus();
+    function renderCourses() {
+        var year = $('courseYear').value;
+        var q = $('courseSearch').value.trim().toLowerCase();
+        var rows = bindings.filter(function (b) {
+            if (year !== '' && String(b.year_level || '') !== year) {
+                return false;
+            }
+            return q === '' || (b.course_code + ' ' + b.course_name).toLowerCase().indexOf(q) !== -1;
+        });
+
+        $('courseTabCount').textContent = '(' + bindings.length + ')';
+        $('courseCount').textContent = 'แสดง ' + rows.length + ' จาก ' + bindings.length + ' รายวิชา';
+
+        var box = $('courseTable');
+        if (!rows.length) {
+            messageBox(box, bindings.length ? 'ไม่พบรายวิชาที่ตรงกับเงื่อนไข' : 'ยังไม่มีรายวิชาในฉบับนี้');
+            return;
+        }
+
+        box.textContent = '';
+        var table = el('table', 'table');
+        var head  = el('tr');
+        ['รายวิชา', 'ชั้นปี · ภาค', ''].forEach(function (label, i) {
+            var th = el('th', '', label);
+            th.scope = 'col';
+            if (i === 2) {
+                th.appendChild(el('span', 'sr-only', 'จัดการ'));
+            }
+            head.appendChild(th);
+        });
+        table.appendChild(el('thead')).appendChild(head);
+
+        var body = table.appendChild(el('tbody'));
+        rows.forEach(function (b) {
+            var course = courseById[b.courses_id] || {};
+            var tr = el('tr');
+
+            var nameCell = el('td', 'course-cell');
+            nameCell.appendChild(el('b', '', b.course_name));
+            nameCell.appendChild(el('small', '', b.course_code + (course.course_group_name ? ' · ' + course.course_group_name : '')));
+            tr.appendChild(nameCell);
+            tr.appendChild(el('td', 'nowrap', yearSemLabel(b)));
+
+            var actions = el('td', 'nowrap num');
+            var edit = el('button', 'link-btn', 'แก้ไข');
+            edit.type = 'button';
+            edit.setAttribute('aria-label', 'แก้ไข ' + b.course_name);
+            edit.addEventListener('click', function () { openCourse(edit, b); });
+            var remove = el('button', 'link-btn link-btn--danger', 'นำออก');
+            remove.type = 'button';
+            remove.setAttribute('aria-label', 'นำ ' + b.course_name + ' ออกจากหลักสูตร');
+            remove.addEventListener('click', function () { removeBinding(remove, b); });
+            actions.appendChild(edit);
+            actions.appendChild(remove);
+            tr.appendChild(actions);
+
+            body.appendChild(tr);
+        });
+        box.appendChild(el('div', 'table-wrap')).appendChild(table);
+    }
+
+    function fillYearFilter() {
+        var select = $('courseYear');
+        var keep = select.value;
+        var years = {};
+        bindings.forEach(function (b) {
+            if (b.year_level) {
+                years[b.year_level] = true;
+            }
+        });
+        select.textContent = '';
+        select.appendChild(option('', 'ทุกชั้นปี'));
+        Object.keys(years).sort(function (a, b) { return a - b; }).forEach(function (y) {
+            select.appendChild(option(y, 'ปี ' + y));
+        });
+        select.value = years[keep] ? keep : '';
+    }
+
+    function loadCourses() {
+        var pvId = $('courseVersion').value;
+        var box = $('courseTable');
+        if (!versions.length || !pvId) {
+            bindings = [];
+            $('courseAddBtn').disabled = true;
+            $('courseTabCount').textContent = '(0)';
+            $('courseCount').textContent = '';
+            messageBox(box, 'ยังไม่มีฉบับหลักสูตร · เพิ่มฉบับที่แท็บ "ฉบับหลักสูตร" ก่อน จึงจะเพิ่มรายวิชาได้');
+            return Promise.resolve();
+        }
+        box.textContent = '';
+        box.appendChild(el('p', 'muted', 'กำลังโหลด…'));
+        return Api.get('/program-versions/' + encodeURIComponent(pvId) + '/courses').then(function (res) {
+            if (!res.ok) {
+                messageBox(box, res.error.message, 'error');
                 return;
             }
-            if (values.effective_from && values.effective_to && values.effective_to < values.effective_from) {
-                setFieldError(vf.effective_to, 'วันสิ้นสุดต้องไม่ก่อนวันเริ่มใช้');
-                vf.effective_to.focus();
+            bindings = res.data.courses || [];
+            $('courseAddBtn').disabled = false;
+            fillYearFilter();
+            renderCourses();
+        });
+    }
+
+    $('courseVersion').addEventListener('change', loadCourses);
+    $('courseYear').addEventListener('change', renderCourses);
+    $('courseSearch').addEventListener('input', renderCourses);
+
+    function removeBinding(btn, b) {
+        if (!window.confirm('นำ "' + b.course_code + ' ' + b.course_name + '" ออกจากฉบับหลักสูตรนี้?\nรายวิชายังอยู่ในระบบ')) {
+            return;
+        }
+        setBusy(btn, true);
+        Api.remove('/program-version-courses/' + encodeURIComponent(b.id_program_version_courses)).then(function (res) {
+            if (res.ok) {
+                loadCourses();
                 return;
             }
+            setBusy(btn, false);
+            window.alert(res.error.message);
+        });
+    }
 
-            var submitBtn = versionForm.querySelector('button[type="submit"]');
-            setBusy(submitBtn, true);
-            Api.post('/programs/' + encodeURIComponent(currentProgramId) + '/versions', values).then(function (res) {
-                setBusy(submitBtn, false);
-                if (res.ok) {
-                    versionsChanged = true;
-                    versionForm.reset();
-                    loadVersions().then(function () { vf.version_no.focus(); });
-                    return;
+    // ---------- ฟอร์มรายวิชา ----------
+    var courseModal = $('courseModal');
+    var courseForm  = $('courseForm');
+    var courseError = $('courseFormError');
+    var cf = courseForm.elements;
+
+    function currentMode() {
+        var checked = courseForm.querySelector('input[name="mode"]:checked');
+        return checked ? checked.value : 'new';
+    }
+
+    function applyMode() {
+        var editing = cf.binding_id.value !== '';
+        var mode = editing ? 'new' : currentMode();
+        $('courseModeGroup').hidden = editing || !groups;
+        $('courseExistingField').hidden = mode !== 'existing';
+        $('courseNewFields').hidden = mode === 'existing';
+    }
+
+    courseForm.addEventListener('change', function (e) {
+        if (e.target.name === 'mode') {
+            applyMode();
+        }
+    });
+
+    function fillGroupSelect(selected) {
+        var select = $('cGroup');
+        select.textContent = '';
+        select.appendChild(option('', 'เลือกกลุ่มวิชา'));
+        (groups || []).forEach(function (g) {
+            select.appendChild(option(g.id_course_groups, g.name));
+        });
+        select.value = selected || '';
+    }
+
+    function fillExistingSelect() {
+        var bound = {};
+        bindings.forEach(function (b) { bound[b.courses_id] = true; });
+        var select = $('cExisting');
+        select.textContent = '';
+        select.appendChild(option('', 'เลือกรายวิชา'));
+        allCourses.filter(function (c) { return !bound[c.id_courses]; })
+            .sort(function (a, b) { return String(a.code).localeCompare(String(b.code)); })
+            .forEach(function (c) { select.appendChild(option(c.id_courses, c.code + ' ' + c.name)); });
+    }
+
+    function openCourse(trigger, binding) {
+        courseForm.reset();
+        clearForm(courseForm, courseError);
+        var version = versions.filter(function (v) { return String(v.id_program_versions) === $('courseVersion').value; })[0];
+        $('courseModalSub').textContent = panel.dataset.name + (version ? ' · ฉบับที่ ' + version.version_no : '');
+        cf.binding_id.value = binding ? binding.id_program_version_courses : '';
+        cf.course_id.value  = binding ? binding.courses_id : '';
+        $('courseModalTitle').textContent = binding ? 'แก้ไขรายวิชา' : 'เพิ่มรายวิชา';
+
+        var course = binding ? (courseById[binding.courses_id] || {}) : {};
+        fillGroupSelect(course.course_groups_id);
+        fillExistingSelect();
+        if (!groups && !binding) {
+            courseForm.querySelector('input[name="mode"][value="existing"]').checked = true;
+        }
+        $('cCode').value = binding ? binding.course_code : '';
+        $('cName').value = binding ? binding.course_name : '';
+        $('cYear').value = binding && binding.year_level ? binding.year_level : '';
+        $('cSemester').value = binding && binding.semester_no ? binding.semester_no : '';
+        applyMode();
+        showModal(courseModal, trigger, currentMode() === 'existing' && !binding ? $('cExisting') : $('cCode'));
+    }
+
+    $('courseAddBtn').addEventListener('click', function () {
+        openCourse($('courseAddBtn'), null);
+    });
+
+    function bindingValues() {
+        return {
+            year_level: $('cYear').value === '' ? null : parseInt($('cYear').value, 10),
+            semester_no: $('cSemester').value === '' ? null : parseInt($('cSemester').value, 10)
+        };
+    }
+
+    function showCourseError(res) {
+        var code = res.error.code;
+        if (code === 'DUPLICATE_COURSE_CODE') {
+            setFieldError($('cCode'), res.error.message);
+            $('cCode').focus();
+        } else if (code === 'DUPLICATE_BINDING') {
+            setFieldError($('cExisting'), res.error.message);
+            $('cExisting').focus();
+        } else if (code === 'GROUP_NOT_FOUND') {
+            setFieldError($('cGroup'), res.error.message);
+            $('cGroup').focus();
+        } else {
+            setAlert(courseError, res.error.message);
+        }
+    }
+
+    function validateCourseFields() {
+        var ok = true;
+        [['cCode', 'กรุณากรอกรหัสวิชา'], ['cName', 'กรุณากรอกชื่อวิชา'], ['cGroup', 'กรุณาเลือกกลุ่มวิชา']].forEach(function (f) {
+            var input = $(f[0]);
+            if (input.value.trim() === '') {
+                setFieldError(input, f[1]);
+                if (ok) {
+                    input.focus();
                 }
-                if (res.error.code === 'DUPLICATE_VERSION') {
-                    setFieldError(vf.version_no, 'ฉบับที่ ' + values.version_no + ' มีอยู่แล้วในหลักสูตรนี้');
-                    vf.version_no.focus();
-                } else if (res.error.code === 'INVALID_DATE_RANGE') {
-                    setFieldError(vf.effective_to, 'วันสิ้นสุดต้องไม่ก่อนวันเริ่มใช้');
-                    vf.effective_to.focus();
-                } else {
-                    setAlert(versionError, res.error.message);
-                }
-            });
+                ok = false;
+            }
         });
+        return ok;
     }
 
-    // ---------- ปุ่ม ----------
-    document.addEventListener('click', function (e) {
-        var newBtn     = e.target.closest('[data-program-new]');
-        var editBtn    = e.target.closest('[data-program-edit]');
-        var versionBtn = e.target.closest('[data-program-versions]');
-        if (newBtn && programModal) {
-            openProgram(newBtn, null);
-        } else if (editBtn && programModal) {
-            openProgram(editBtn, {
-                id: editBtn.dataset.id,
-                code: editBtn.dataset.code,
-                name: editBtn.dataset.name,
-                status: editBtn.dataset.status
+    courseForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearForm(courseForm, courseError);
+
+        var pvId = $('courseVersion').value;
+        var bindingId = cf.binding_id.value;
+        var mode = bindingId ? 'edit' : currentMode();
+        var courseValues = {
+            code: $('cCode').value.trim().toUpperCase(),
+            name: $('cName').value.trim(),
+            course_groups_id: $('cGroup').value === '' ? null : parseInt($('cGroup').value, 10)
+        };
+
+        if (mode === 'existing' && $('cExisting').value === '') {
+            setFieldError($('cExisting'), 'กรุณาเลือกรายวิชา');
+            $('cExisting').focus();
+            return;
+        }
+        if (mode !== 'existing' && !validateCourseFields()) {
+            return;
+        }
+
+        var btn = courseForm.querySelector('button[type="submit"]');
+        setBusy(btn, true);
+
+        var done = function (res) {
+            setBusy(btn, false);
+            if (res.ok) {
+                hideModal();
+                loadCatalog().then(loadCourses);
+                return;
+            }
+            showCourseError(res);
+        };
+
+        if (mode === 'edit') {
+            Api.post('/courses/' + encodeURIComponent(cf.course_id.value), courseValues).then(function (res) {
+                if (!res.ok) {
+                    return done(res);
+                }
+                Api.post('/program-version-courses/' + encodeURIComponent(bindingId), bindingValues()).then(done);
             });
-        } else if (versionBtn && versionModal) {
-            openVersions(versionBtn);
-        } else if (e.target.closest('[data-modal-close]') || (openModal && e.target === openModal)) {
-            hideModal();
+        } else if (mode === 'existing') {
+            var payload = bindingValues();
+            payload.courses_id = parseInt($('cExisting').value, 10);
+            Api.post('/program-versions/' + encodeURIComponent(pvId) + '/courses', payload).then(done);
+        } else {
+            Api.post('/courses', courseValues).then(function (res) {
+                if (!res.ok) {
+                    return done(res);
+                }
+                var payload = bindingValues();
+                payload.courses_id = res.data.course.id_courses;
+                Api.post('/program-versions/' + encodeURIComponent(pvId) + '/courses', payload).then(function (bind) {
+                    if (!bind.ok) {
+                        bind.error.message = 'สร้างรายวิชาแล้ว แต่ยังผูกกับหลักสูตรไม่ได้ · ' + bind.error.message;
+                    }
+                    done(bind);
+                });
+            });
+        }
+    });
+
+    // ---------- เริ่มต้น ----------
+    Promise.all([loadVersions(), loadCatalog()]).then(function (r) {
+        if (r[0]) {
+            loadCourses();
         }
     });
 })();
