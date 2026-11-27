@@ -23,7 +23,39 @@ final class ExamController extends Controller
             ? $this->parsePositiveId($_GET['course_offerings_id'])
             : null;
 
-        $this->json(200, ['exams' => $this->model->listExams($courseId, $offeringId)], null);
+        $exams = $this->model->listExams($courseId, $offeringId);
+
+        if (Security::wantsJson()) {
+            $this->json(200, ['exams' => $exams], null);
+            return;
+        }
+
+        $this->view('exams/create', [
+            'pageTitle' => 'จัดการชุดข้อสอบ',
+            'exams'     => $exams,
+            'error'     => null,
+            'old'       => [],
+        ]);
+    }
+
+    // GET /exams/create
+    public function create(): void
+    {
+        Security::requirePermission('exam.manage');
+
+        $exams = $this->model->listExams();
+
+        if (Security::wantsJson()) {
+            $this->json(200, ['exams' => $exams], null);
+            return;
+        }
+
+        $this->view('exams/create', [
+            'pageTitle' => 'สร้างชุดข้อสอบ',
+            'exams'     => $exams,
+            'error'     => null,
+            'old'       => [],
+        ]);
     }
 
     // GET /exams/{id}
