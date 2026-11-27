@@ -766,3 +766,16 @@ label.pill:has(input:checked) { border: 2px solid var(--c-primary); background: 
 }
 .danger-zone b { color: #991B1B; }
 .danger-zone p { margin: 2px 0 0; color: var(--c-neutral); font-size: 15px; }
+.hub-hero__deco { position: absolute; right: 300px; bottom: 0; pointer-events: none; }
+.hub-hero > :not(.hub-hero__deco) { position: relative; }
+.pill-bar__actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+button.pill { font: inherit; cursor: pointer; }
+.pill[aria-checked="true"] { border: 2px solid var(--c-primary); background: var(--c-primary); color: #FFF; font-weight: 700; padding: 0 15px; }
+.program-cards > .program-card { flex: 1 1 300px; max-width: 460px; }
+.badge--solid-success { background: #15803D; color: #FFF; border-color: #15803D; }
+.badge--solid-success::before { display: none; }
+.course-form__top { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+@media (max-width: 700px) { .course-form__top { grid-template-columns: 1fr; } }
+.modal__foot--split { align-items: center; }
+.panel .table td.num, .panel .table th.num { text-align: right; }
+.panel .table td.center, .panel .table th.center { text-align: center; }
