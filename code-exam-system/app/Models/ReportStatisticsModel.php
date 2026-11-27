@@ -665,6 +665,79 @@ final class ReportStatisticsModel
         }
     }
 
+    /**
+     * [FR-19] ดึงคำตอบข้อสอบอัตนัยของนิสิตที่ส่งข้อสอบแล้ว เพื่อส่งออกเป็นไฟล์ Word
+     */
+    public function getSubjectiveAnswersForExport(
+        int $examId,
+        ?int $sectionId = null,
+        ?int $examQuestionId = null
+    ): array {
+        $exam = $this->findExamById($examId);
+        if (!$exam) {
+            return ['error' => [404, 'EXAM_NOT_FOUND', 'ไม่พบข้อมูลชุดข้อสอบ']];
+        }
+
+        $course = $this->findCourseById((int)$exam['courses_id']);
+
+        $sql = "
+            SELECT
+                eq.id_exam_questions,
+                eq.sort_order,
+                eq.score AS item_max_score,
+                q.id_questions,
+                q.type AS question_type,
+                q.text AS question_text,
+                att.id_attempts,
+                att.attempt_no,
+                att.submitted_at,
+                s.section_no,
+                u.id_users,
+                u.student_code,
+                u.display_name,
+                aa.answer_text,
+                aa.score AS current_score
+            FROM attempts att
+            JOIN users u ON u.id_users = att.users_id
+            LEFT JOIN sections s ON s.id_sections = att.sections_id
+            JOIN exam_questions eq ON eq.exams_id = att.exams_id
+            JOIN questions q ON q.id_questions = eq.questions_id
+            LEFT JOIN attempt_answers aa
+              ON aa.attempts_id = att.id_attempts
+             AND aa.exam_question_id = eq.id_exam_questions
+             AND aa.question_version_id = eq.question_version_id
+            WHERE att.exams_id = :eid
+              AND att.status IN ('submitted', 'auto_submitted')
+              AND q.type IN ('short_answer', 'essay', 'subjective')
+        ";
+
+        $params = [':eid' => $examId];
+
+        if ($sectionId !== null) {
+            $sql .= " AND att.sections_id = :sid";
+            $params[':sid'] = $sectionId;
+        }
+
+        if ($examQuestionId !== null) {
+            $sql .= " AND eq.id_exam_questions = :eq_id";
+            $params[':eq_id'] = $examQuestionId;
+        }
+
+        $sql .= " ORDER BY eq.sort_order ASC, s.section_no ASC, u.student_code ASC, att.attempt_no DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll();
+
+        return [
+            'data' => [
+                'exam'   => $exam,
+                'course' => $course,
+                'items'  => $rows,
+            ],
+        ];
+    }
+
     private function selectAttemptsForRun(int $examId, ?int $sectionId, string $mode): array
     {
         $sql = "
