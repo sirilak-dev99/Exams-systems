@@ -697,3 +697,53 @@ body.layout-default { font-family: Tahoma, "Noto Sans Thai", sans-serif; color: 
 .layout-default .alert { display: block; border: 0; padding: 12px; border-radius: 8px; background: #fff0f0; color: #a12c2c; }
 .layout-default .site-footer { text-align: center; color: #7a8497; padding: 24px; }
 .badge--upcoming { background: #e0f2fe; color: #075985; border-color: #9fd3f2; }
+
+/* ==================== 19. หน้าหลักสูตรและรายวิชา ==================== */
+.hub-hero { min-height: 140px; gap: 22px; padding: 22px 28px; border: 0; }
+.hub-hero h1 { font-size: 34px; color: var(--c-ink); }
+.hub-hero p { font-size: 17px; }
+.hub-hero__links { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: var(--fs-sm); }
+.hub-hero__links a { color: var(--c-primary-dark); font-weight: 600; }
+.hub-hero__actions { position: relative; flex: none; display: flex; gap: 12px; align-items: center; }
+
+.pill-bar { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 20px; }
+.pill-bar__label { font-weight: 700; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px;
+  border: 1px solid var(--c-input-line); background: #FFF; color: var(--c-text); text-decoration: none; font-size: 16px;
+}
+.pill:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.pill[aria-current="page"] { border: 2px solid var(--c-primary); background: var(--c-primary); color: #FFF; font-weight: 700; }
+
+.program-cards { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+.program-cards li { flex: 1 1 300px; max-width: 460px; display: flex; }
+.program-card {
+  flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 14px 18px;
+  border-radius: 12px; border: 1px solid var(--c-input-line); background: #FFF; color: var(--c-text); text-decoration: none;
+}
+.program-card:hover { border-color: var(--c-primary); }
+.program-card b { font-size: 16px; line-height: 1.4; color: #111827; }
+.program-card small { font-size: 15px; color: var(--c-neutral); }
+.program-card[aria-current="page"] { background: #EDE5FC; border: 2px solid var(--c-primary); padding: 13px 17px; }
+
+.panel { gap: 6px; padding: 20px 24px; }
+.panel__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.panel__head h2 { font-size: 22px; }
+.panel__sub { color: var(--c-neutral); }
+.subtabs { display: flex; gap: 24px; border-bottom: 1px solid #E2D8F4; margin-top: 10px; }
+.subtabs button {
+  font: inherit; font-size: 16px; min-height: 48px; padding: 0 2px; border: 0; background: transparent; cursor: pointer;
+  border-bottom: 3px solid transparent; color: var(--c-neutral);
+}
+.subtabs button[aria-selected="true"] { border-bottom-color: var(--c-primary); color: var(--c-primary); font-weight: 700; }
+.panel__bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 0 6px; }
+.panel__bar .input, .panel__bar .select { width: auto; }
+.panel__count { font-size: 15px; color: var(--c-neutral); margin-bottom: 4px; }
+.panel .table th { font-size: 16px; font-weight: 700; color: var(--c-ink); background: #EEE7FB; }
+.course-cell b { display: block; font-weight: 700; }
+.course-cell small { display: block; font-size: 15px; color: var(--c-neutral); }
+.link-btn { font: inherit; font-weight: 600; color: var(--c-primary); background: none; border: 0; padding: 8px; cursor: pointer; min-height: 40px; }
+.link-btn:hover { text-decoration: underline; }
+.link-btn--danger { color: var(--c-danger); }
+@media (max-width: 700px) { .hub-hero { flex-direction: column; align-items: flex-start; } .hub-hero h1 { font-size: 28px; } }
