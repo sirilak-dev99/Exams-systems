@@ -806,3 +806,32 @@ button.pill { font: inherit; cursor: pointer; }
 .topbar__sep { flex: none; width: 1px; height: 36px; background: #E2D9F2; }
 .profile .user__name b { color: var(--c-primary-dark); }
 @media (max-width: 900px) { .topbar__search, .topbar__sep { display: none; } }
+
+/* ==================== 21. หน้าเข้าสู่ระบบ ==================== */
+body.layout-auth { background: var(--c-bg); }
+.auth__split { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+.auth__brand {
+  position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: 14px;
+  padding: 48px 56px; color: #FFF; background: linear-gradient(180deg, var(--c-navy) 0%, var(--c-navy-2) 100%);
+}
+.auth__brand > * { position: relative; z-index: 1; }
+.auth__brand::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 260px; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 720 260' preserveAspectRatio='none'%3E%3Cpath d='M0 60C220 -10 520 10 720 110V260H0z' fill='%23ffffff' fill-opacity='.06'/%3E%3Cpath d='M0 140C240 90 520 110 720 190V260H0z' fill='%23ffffff' fill-opacity='.06'/%3E%3C/svg%3E") no-repeat bottom / 100% 100%;
+}
+.auth__brand svg { stroke-width: 1.6; }
+.auth__org { margin-top: 18px; font-size: 16px; opacity: .9; }
+.auth__brand h1 { color: #FFF; font-size: 38px; line-height: 1.35; }
+.auth__lead { max-width: 460px; font-size: 17px; opacity: .92; }
+.auth__side { display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+.auth__card {
+  width: 100%; max-width: 420px; background: #FFF; border: 1px solid var(--c-line); border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(76, 29, 149, .08); padding: 36px 32px; display: flex; flex-direction: column; gap: 18px;
+}
+.auth__card h2 { font-size: 28px; color: var(--c-ink); }
+.auth__hint { color: var(--c-text-2); margin-top: -8px; }
+.auth__domains { background: var(--c-primary-soft); border-radius: 12px; padding: 14px 16px; font-size: 15px; display: flex; flex-direction: column; gap: 4px; }
+.auth__or { display: flex; align-items: center; gap: 12px; color: var(--c-muted); font-size: 14px; }
+.auth__or::before, .auth__or::after { content: ""; flex: 1; border-top: 1px dashed #B9AEDB; }
+.auth__help { font-size: 15px; color: var(--c-text-2); }
+@media (max-width: 900px) { .auth__split { grid-template-columns: 1fr; } .auth__brand { padding: 36px 24px; } .auth__brand h1 { font-size: 28px; } }
