@@ -14,6 +14,7 @@
     var staffBySection = {};
     var membersBySection = {};
     var people = {};
+    var formerRole = {};
 
     // ---------- ตัวช่วย ----------
     function $(id) {
@@ -177,10 +178,18 @@
         var select = $('coordSelect');
         var chosen = select.value;
         var calls = [];
-        allStaff().forEach(function (p) {
-            var want = String(p.user_id) === chosen ? 'coordinator' : (p.staff_role === 'coordinator' ? 'teacher' : p.staff_role);
-            if (want !== p.staff_role) {
-                calls.push(Api.post('/section-staff/' + encodeURIComponent(p.id_section_staff), { staff_role: want }));
+        var staff = allStaff();
+        var chosenRows = staff.filter(function (p) { return String(p.user_id) === chosen; });
+        var keepRow = chosenRows.filter(function (p) { return p.staff_role === 'coordinator'; })[0] || chosenRows[0] || null;
+        staff.forEach(function (p) {
+            if (p === keepRow) {
+                if (p.staff_role !== 'coordinator') {
+                    formerRole[p.id_section_staff] = p.staff_role;
+                    calls.push(Api.post('/section-staff/' + encodeURIComponent(p.id_section_staff), { staff_role: 'coordinator' }));
+                }
+            } else if (p.staff_role === 'coordinator' && String(p.user_id) !== chosen) {
+                calls.push(Api.post('/section-staff/' + encodeURIComponent(p.id_section_staff), { staff_role: formerRole[p.id_section_staff] || 'teacher' }));
+                delete formerRole[p.id_section_staff];
             }
         });
         $('coordError').hidden = true;
