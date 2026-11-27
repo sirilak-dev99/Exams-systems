@@ -3,7 +3,7 @@
 $user        = $user ?? Security::currentUser() ?? [];
 $userRoles   = (array)($user['roles'] ?? []);
 $isStaffHome = array_intersect($userRoles, ['admin', 'academic_staff']) && !in_array('instructor', $userRoles, true);
-$crumbTitle  = $isStaffHome ? 'Dashboard' : 'หน้าหลัก';
+$crumbTitle  = 'หน้าหลัก';
 $pageScripts = ['/js/pages/dashboard.js'];
 require __DIR__ . '/includes/header.php';
 
@@ -43,11 +43,11 @@ $tiles = [
 ];
 ?>
 <?php if ($isStaffHome): ?>
-<?php /* ---------- หัว Dashboard ---------- */ ?>
-<section class="greet dash-hero" aria-label="Dashboard">
+<?php /* ---------- แบนเนอร์ ---------- */ ?>
+<section class="greet dash-hero" aria-label="หน้าหลัก">
     <span class="dash-hero__icon"><?= ui_icon('home', 56) ?></span>
     <div class="greet__text">
-        <h1>Dashboard</h1>
+        <h1>หน้าหลัก</h1>
         <p>ภาพรวมระบบ<span data-current-term><?= $currentTerm !== null ? ' · ภาคการศึกษา ' . Security::escape((string)$currentTerm) : '' ?></span></p>
     </div>
     <svg class="dash-hero__art" viewBox="0 0 470 140" aria-hidden="true" focusable="false">
