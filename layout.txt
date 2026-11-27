@@ -13,15 +13,29 @@ D:.
 |   |   
 |   +---app
 |   |   +---Controllers
+|   |   |       AcademicTermController.php
 |   |   |       AuthController.php
+|   |   |       ChapterController.php
+|   |   |       ConceptController.php
+|   |   |       CourseController.php
+|   |   |       CourseOfferingController.php
 |   |   |       ExamController.php
 |   |   |       HomeController.php
 |   |   |       ProgramController.php
+|   |   |       ProgramVersionCourseController.php
+|   |   |       SectionMemberController.php
 |   |   |       
 |   |   +---Models
+|   |   |       AcademicTermModel.php
+|   |   |       ChapterModel.php
+|   |   |       ConceptModel.php
+|   |   |       CourseModel.php
+|   |   |       CourseOfferingModel.php
 |   |   |       ExamModel.php
 |   |   |       ProgramModel.php
+|   |   |       ProgramVersionCourseModel.php
 |   |   |       QuestionModel.php
+|   |   |       SectionMemberModel.php
 |   |   |       UserModel.php
 |   |   |       
 |   |   \---Views
