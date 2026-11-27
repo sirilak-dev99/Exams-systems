@@ -1,7 +1,7 @@
 <?php
 // ---------- ค่าพื้นฐาน ----------
 $user      = $user ?? Security::currentUser() ?? [];
-$pageTitle = 'หน้าหลัก';
+$pageTitle = array_intersect((array)($user['roles'] ?? []), ['admin', 'academic_staff']) && !in_array('instructor', (array)($user['roles'] ?? []), true) ? 'Dashboard' : 'หน้าหลัก';
 require __DIR__ . '/includes/header.php';
 
 $name          = (string)($user['display_name'] ?? '');
