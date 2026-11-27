@@ -29,6 +29,7 @@ D:.
 |   |   |       GradingController.php
 |   |   |       HomeController.php
 |   |   |       LearningContentController.php
+|   |   |       PageController.php
 |   |   |       ProgramController.php
 |   |   |       ProgramVersionCourseController.php
 |   |   |       QuestionController.php
@@ -130,4 +131,5 @@ D:.
 |           
 \---docs
         api_contract.md
+        api_reference_frontend_exam_system.md
         
