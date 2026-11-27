@@ -3,7 +3,6 @@
 $authLayout = true;
 require dirname(__DIR__) . '/includes/header.php';
 ?>
-<div class="auth__split">
     <?php /* ---------- ฝั่งแบรนด์ ---------- */ ?>
     <section class="auth__brand" aria-label="ระบบคลังข้อสอบ">
         <?= ui_icon('brand', 104) ?>
@@ -47,5 +46,4 @@ require dirname(__DIR__) . '/includes/header.php';
             <p class="auth__help">เข้าไม่ได้? ติดต่อผู้ดูแลระบบของคณะ</p>
         </div>
     </section>
-</div>
 <?php require dirname(__DIR__) . '/includes/footer.php'; ?>
