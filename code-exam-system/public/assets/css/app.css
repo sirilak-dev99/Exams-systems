@@ -125,6 +125,28 @@ svg { flex: none; }
 .user__name b { font-size: 16px; color: var(--c-ink); }
 .user__name small { font-size: 14px; color: var(--c-muted); }
 
+/* ---------- Dashboard แอดมิน ---------- */
+.dash-hero { min-height: 140px; gap: 22px; }
+.dash-hero__icon { display: inline-flex; color: var(--c-primary); flex: none; }
+.dash-hero h1 { font-size: 34px; }
+.dash-tiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.dash-tile {
+  height: 100%; display: flex; flex-direction: column; gap: 2px; padding: 16px 18px; box-sizing: border-box;
+  background: var(--c-surface); border: 1px solid var(--c-line); border-radius: var(--radius-lg); box-shadow: var(--shadow);
+  color: var(--c-text); text-decoration: none;
+}
+a.dash-tile:hover { border-color: var(--c-primary); }
+.dash-tile b { font-size: 30px; line-height: 1.2; color: var(--c-ink); }
+.dash-tile__label { font-size: 16px; font-weight: 700; }
+.dash-tile__sub { font-size: 15px; color: var(--c-text-2); }
+.dash-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.dash-list li { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px solid var(--c-line-2); }
+.dash-list li span { font-size: 15px; color: var(--c-text-2); }
+.dash-list--log li { flex-direction: row; gap: 12px; }
+.dash-list--log li span:last-child { font-size: 16px; color: var(--c-text); }
+.dash-list__time { flex: none; width: 52px; }
+@media (max-width: 900px) { .dash-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 /* ---------- เมนูโปรไฟล์ ---------- */
 .profile { position: relative; }
 .profile summary { list-style: none; cursor: pointer; border-radius: 999px; padding: 4px 10px 4px 4px; }
