@@ -206,36 +206,106 @@ $cardUrl  = static function (int $programId) use ($appUrl, $termId): string {
 <?php endif; ?>
 
 <?php /* ---------- ฟอร์มเพิ่มหลักสูตร ---------- */ ?>
-<div class="modal" id="programModal" role="dialog" aria-modal="true" aria-labelledby="programModalTitle">
-    <form class="modal__box" id="programForm" novalidate>
-        <div class="modal__head">
-            <h2 id="programModalTitle">เพิ่มหลักสูตรใหม่</h2>
+<div class="modal" id="programModal" role="dialog" aria-modal="true" aria-labelledby="programModalTitle" aria-describedby="programModalSub">
+    <form class="modal__box sheet" id="programForm" novalidate>
+        <div class="sheet__head">
+            <span class="sheet__icon" aria-hidden="true"><?= ui_icon('school', 28) ?></span>
+            <div class="grow">
+                <h2 id="programModalTitle">เพิ่มหลักสูตรใหม่</h2>
+                <p id="programModalSub">สร้างหลักสูตรพร้อมฉบับแรก แล้วเลือกว่าจะเริ่มรายวิชาอย่างไร</p>
+            </div>
             <button class="modal__close" type="button" data-modal-close aria-label="ปิด">✕</button>
         </div>
-        <div class="alert alert--danger" id="programFormError" role="alert" hidden><b></b></div>
-        <div class="form-stack">
-            <div class="field">
-                <label class="field__label" for="pName">ชื่อหลักสูตร<span class="req">*</span></label>
-                <input class="input" id="pName" name="name" maxlength="150" required autocomplete="off" placeholder="เช่น หลักสูตรพยาบาลศาสตรบัณฑิต" aria-describedby="pNameError">
-                <span class="field__error" id="pNameError" hidden></span>
-            </div>
-            <div class="form-grid">
-                <div class="field">
-                    <label class="field__label" for="pCode">รหัสหลักสูตร<span class="req">*</span></label>
-                    <input class="input" id="pCode" name="code" maxlength="20" required autocomplete="off" aria-describedby="pCodeError">
-                    <span class="field__error" id="pCodeError" hidden></span>
+
+        <div class="sheet__body">
+            <div class="alert alert--danger" id="programFormError" role="alert" hidden><b></b></div>
+
+            <?php /* ---------- 1. ข้อมูลหลักสูตร ---------- */ ?>
+            <section class="sheet__section" aria-labelledby="pSecInfo">
+                <div class="sheet__section-head">
+                    <span class="form-section__num" aria-hidden="true">1</span>
+                    <h3 id="pSecInfo">ข้อมูลหลักสูตร</h3>
                 </div>
                 <div class="field">
-                    <label class="field__label" for="pStatus">สถานะหลักสูตร</label>
-                    <select class="select" id="pStatus" name="status">
-                        <?php foreach ($statusLabels as $value => $label): ?>
-                            <option value="<?= Security::escape($value) ?>"><?= Security::escape($label) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <label class="field__label" for="pName">ชื่อหลักสูตร<span class="req">*</span></label>
+                    <input class="input" id="pName" name="name" maxlength="150" required autocomplete="off" placeholder="เช่น หลักสูตรพยาบาลศาสตรบัณฑิต (หลักสูตรปรับปรุง พ.ศ. 2570)" aria-describedby="pNameError">
+                    <span class="field__error" id="pNameError" hidden></span>
                 </div>
-            </div>
+                <div class="sheet__grid">
+                    <div class="field">
+                        <label class="field__label" for="pCode">รหัสหลักสูตร<span class="req">*</span></label>
+                        <input class="input input--code" id="pCode" name="code" maxlength="20" required autocomplete="off" placeholder="เช่น BNS" aria-describedby="pCodeHint pCodeError">
+                        <span class="field__hint" id="pCodeHint">ไม่ซ้ำกับหลักสูตรอื่น</span>
+                        <span class="field__error" id="pCodeError" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="pStatus">สถานะหลักสูตร</label>
+                        <select class="select" id="pStatus" name="status">
+                            <?php foreach ($statusLabels as $value => $label): ?>
+                                <option value="<?= Security::escape($value) ?>"><?= Security::escape($label) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="pVersionNo">ฉบับหลักสูตร (ฉบับที่)<span class="req">*</span></label>
+                        <input class="input" id="pVersionNo" name="version_no" type="number" min="1" step="1" value="1" required aria-describedby="pVersionNoError">
+                        <span class="field__error" id="pVersionNoError" hidden></span>
+                    </div>
+                </div>
+            </section>
+
+            <?php /* ---------- 2. รายวิชาเริ่มต้น ---------- */ ?>
+            <section class="sheet__section" aria-labelledby="pSecCourses">
+                <div class="sheet__section-head">
+                    <span class="form-section__num" aria-hidden="true">2</span>
+                    <h3 id="pSecCourses">รายวิชาเริ่มต้น</h3>
+                </div>
+                <fieldset class="picks">
+                    <legend class="sr-only">รายวิชาเริ่มต้น</legend>
+                    <label class="pick">
+                        <input type="radio" name="start" value="empty" checked>
+                        <span class="pick__icon" aria-hidden="true"><?= ui_icon('file-plus', 24) ?></span>
+                        <span class="pick__body">
+                            <b>เริ่มจากหลักสูตรว่าง</b>
+                            <small>เพิ่มรายวิชาเองทีหลัง หรือนำเข้าจาก Excel</small>
+                        </span>
+                    </label>
+                    <label class="pick">
+                        <input type="radio" name="start" value="copy"<?= $programs ? '' : ' disabled' ?>>
+                        <span class="pick__icon" aria-hidden="true"><?= ui_icon('layers', 24) ?></span>
+                        <span class="pick__body">
+                            <b>คัดลอกรายวิชาจากหลักสูตรเดิม</b>
+                            <small><?= $programs ? 'เหมาะกับหลักสูตรปรับปรุง · แก้ไขรายวิชาได้ภายหลัง' : 'ยังไม่มีหลักสูตรเดิมให้คัดลอก' ?></small>
+                        </span>
+                    </label>
+                </fieldset>
+                <div class="sheet__panel" id="pCopyFields" hidden>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label class="field__label" for="pSrcProgram">คัดลอกจากหลักสูตร<span class="req">*</span></label>
+                            <select class="select" id="pSrcProgram" aria-describedby="pSrcProgramError">
+                                <option value="">เลือกหลักสูตร</option>
+                                <?php foreach ($programs as $p): ?>
+                                    <option value="<?= (int)$p['id_programs'] ?>"><?= Security::escape((string)$p['code']) ?> · <?= Security::escape((string)$p['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <span class="field__error" id="pSrcProgramError" hidden></span>
+                        </div>
+                        <div class="field">
+                            <label class="field__label" for="pSrcVersion">ฉบับที่ใช้คัดลอก<span class="req">*</span></label>
+                            <select class="select" id="pSrcVersion" disabled aria-describedby="pSrcVersionHint pSrcVersionError">
+                                <option value="">เลือกหลักสูตรก่อน</option>
+                            </select>
+                            <span class="field__error" id="pSrcVersionError" hidden></span>
+                        </div>
+                    </div>
+                    <p class="sheet__note" id="pSrcVersionHint" aria-live="polite"></p>
+                </div>
+            </section>
         </div>
-        <div class="modal__foot">
+
+        <div class="sheet__foot">
+            <span class="sheet__req"><span class="req">*</span> จำเป็นต้องกรอก</span>
             <button class="btn btn--ghost" type="button" data-modal-close>ยกเลิก</button>
             <button class="btn btn--primary" type="submit">บันทึกหลักสูตร</button>
         </div>
