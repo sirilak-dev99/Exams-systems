@@ -82,3 +82,19 @@ $router->get('/main-concepts/{id}/sub-concepts', [ConceptController::class, 'sub
 $router->post('/main-concepts/{id}/sub-concepts', [ConceptController::class, 'subStore']);
 $router->post('/sub-concepts/{id}', [ConceptController::class, 'subUpdate']);
 $router->post('/sub-concepts/{id}/delete', [ConceptController::class, 'subDestroy']);
+
+// เนื้อหาการเรียนและผูกแนวคิด (Learning Contents - ลำดับ 21)
+$router->get('/courses/{id}/learning-contents', [LearningContentController::class, 'index']);
+$router->post('/courses/{id}/learning-contents', [LearningContentController::class, 'store']);
+$router->get('/learning-contents/{id}', [LearningContentController::class, 'show']);
+$router->post('/learning-contents/{id}', [LearningContentController::class, 'update']);
+$router->post('/learning-contents/{id}/delete', [LearningContentController::class, 'destroy']);
+
+// คลังข้อสอบและระบบเวอร์ชันข้อสอบ (Questions & Versions - ลำดับ 22-23)
+$router->get('/questions', [QuestionController::class, 'index']);
+$router->post('/questions', [QuestionController::class, 'store']);
+$router->get('/questions/{id}', [QuestionController::class, 'show']);
+$router->post('/questions/{id}', [QuestionController::class, 'update']);
+$router->post('/questions/{id}/delete', [QuestionController::class, 'destroy']);
+$router->get('/questions/{id}/versions', [QuestionController::class, 'versions']);
+$router->post('/questions/{id}/versions/{versionId}', [QuestionController::class, 'deleteVersion']);
