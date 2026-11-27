@@ -92,11 +92,11 @@ $links = array_filter([
             <h2><?= Security::escape((string)$selected['name']) ?></h2>
             <span class="badge badge--<?= Security::escape((string)$selected['status']) ?>"><?= Security::escape($statusLabels[$selected['status']] ?? (string)$selected['status']) ?></span>
         </div>
-        <span class="panel__sub">รหัส <?= Security::escape((string)$selected['code']) ?> · <?= (int)$selected['versions_count'] ?> ฉบับ</span>
+        <span class="panel__sub" id="programSub">รหัส <?= Security::escape((string)$selected['code']) ?> · <?= Security::escape($statusLabels[$selected['status']] ?? (string)$selected['status']) ?></span>
 
         <div class="subtabs" role="tablist" aria-label="ส่วนของหลักสูตร">
             <button type="button" role="tab" id="tabCourses" aria-controls="paneCourses" aria-selected="true">รายวิชา <span id="courseTabCount"></span></button>
-            <button type="button" role="tab" id="tabVersions" aria-controls="paneVersions" aria-selected="false" tabindex="-1">ฉบับหลักสูตร (<?= (int)$selected['versions_count'] ?>)</button>
+            <button type="button" role="tab" id="tabCohorts" aria-controls="paneCohorts" aria-selected="false" tabindex="-1">นิสิตตามรุ่น</button>
             <button type="button" role="tab" id="tabSettings" aria-controls="paneSettings" aria-selected="false" tabindex="-1">ตั้งค่าหลักสูตร</button>
         </div>
 
@@ -104,61 +104,38 @@ $links = array_filter([
         <div role="tabpanel" id="paneCourses" aria-labelledby="tabCourses">
             <div class="panel__bar">
                 <div class="row">
-                    <label class="sr-only" for="courseVersion">ฉบับหลักสูตร</label>
-                    <select class="select" id="courseVersion" disabled><option>ฉบับหลักสูตร</option></select>
                     <label class="sr-only" for="courseYear">ชั้นปี</label>
                     <select class="select" id="courseYear"><option value="">ทุกชั้นปี</option></select>
                     <label class="sr-only" for="courseSearch">ค้นหารายวิชา</label>
                     <input class="input" type="search" id="courseSearch" placeholder="ค้นหารหัสหรือชื่อวิชา">
                 </div>
-                <button class="btn btn--primary" type="button" id="courseAddBtn" disabled>+ เพิ่มรายวิชา</button>
+                <div class="btn-row">
+                    <button class="btn btn--secondary" type="button" disabled>นำเข้าจาก Excel <small>เร็วๆ นี้</small></button>
+                    <button class="btn btn--primary" type="button" id="courseAddBtn" disabled>+ เพิ่มรายวิชา</button>
+                </div>
             </div>
             <p class="panel__count" id="courseCount" aria-live="polite"></p>
             <div id="courseTable"><p class="muted">กำลังโหลด…</p></div>
         </div>
 
-        <?php /* ---------- แท็บฉบับหลักสูตร ---------- */ ?>
-        <div role="tabpanel" id="paneVersions" aria-labelledby="tabVersions" hidden>
-            <div id="versionList" aria-live="polite"><p class="muted">กำลังโหลด…</p></div>
-            <form class="form-section" id="versionForm" novalidate>
-                <div class="form-section__head"><h3>เพิ่มฉบับใหม่</h3></div>
-                <div class="alert alert--danger" id="versionFormError" role="alert" hidden><b></b></div>
-                <div class="form-grid">
-                    <div class="field">
-                        <label class="field__label" for="vNo">ฉบับที่<span class="req">*</span></label>
-                        <input class="input" id="vNo" name="version_no" type="number" min="1" step="1" required aria-describedby="vNoError">
-                        <span class="field__error" id="vNoError" hidden></span>
-                    </div>
-                    <div class="field">
-                        <label class="field__label" for="vStatus">สถานะ</label>
-                        <select class="select" id="vStatus" name="status">
-                            <?php foreach ($statusLabels as $value => $label): ?>
-                                <option value="<?= Security::escape($value) ?>"><?= Security::escape($label) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label class="field__label" for="vFrom">เริ่มใช้</label>
-                        <input class="input" id="vFrom" name="effective_from" type="date">
-                    </div>
-                    <div class="field">
-                        <label class="field__label" for="vTo">สิ้นสุด</label>
-                        <input class="input" id="vTo" name="effective_to" type="date" aria-describedby="vToError">
-                        <span class="field__error" id="vToError" hidden></span>
-                    </div>
+        <?php /* ---------- แท็บนิสิตตามรุ่น ---------- */ ?>
+        <div role="tabpanel" id="paneCohorts" aria-labelledby="tabCohorts" hidden>
+            <div class="panel__bar">
+                <span class="muted">นิสิตลงทะเบียนเป็นรุ่น · ชั้นปีเลื่อนให้เองเมื่อเริ่มปีการศึกษาใหม่</span>
+                <div class="btn-row">
+                    <button class="btn btn--secondary" type="button" disabled>นำเข้ารายชื่อจากงานทะเบียน</button>
+                    <button class="btn btn--primary" type="button" disabled>+ เพิ่มรุ่น</button>
                 </div>
-                <div class="btn-row btn-row--end">
-                    <button class="btn btn--primary" type="submit">เพิ่มฉบับ</button>
-                </div>
-            </form>
+            </div>
+            <div class="empty"><?= ui_icon('users', 40) ?><b>ส่วนนิสิตตามรุ่นยังไม่พร้อมใช้งาน</b><span class="muted">รอระบบหลังบ้านเปิดข้อมูลรุ่นนิสิต · เร็วๆ นี้</span></div>
         </div>
 
         <?php /* ---------- แท็บตั้งค่าหลักสูตร ---------- */ ?>
         <div role="tabpanel" id="paneSettings" aria-labelledby="tabSettings" hidden>
-            <form class="form-section" id="settingsForm" novalidate>
+            <form class="settings-form" id="settingsForm" novalidate>
                 <div class="alert alert--danger" id="settingsFormError" role="alert" hidden><b></b></div>
-                <div class="form-grid">
-                    <div class="field span-2">
+                <div class="form-grid form-grid--4">
+                    <div class="field">
                         <label class="field__label" for="sName">ชื่อหลักสูตร<span class="req">*</span></label>
                         <input class="input" id="sName" name="name" maxlength="150" required value="<?= Security::escape((string)$selected['name']) ?>" aria-describedby="sNameError">
                         <span class="field__error" id="sNameError" hidden></span>
@@ -176,13 +153,71 @@ $links = array_filter([
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <div class="field">
+                        <label class="field__label" for="sVersion">ฉบับหลักสูตร (ฉบับที่)</label>
+                        <select class="select" id="sVersion" disabled><option value="">ยังไม่มีฉบับ</option></select>
+                        <button class="link-btn link-btn--start" type="button" id="versionAddBtn">+ เพิ่มฉบับใหม่</button>
+                    </div>
                 </div>
-                <div class="btn-row btn-row--end">
-                    <button class="btn btn--primary" type="submit">บันทึกการแก้ไข</button>
+                <div class="btn-row btn-row--end settings-form__foot">
+                    <button class="btn btn--ghost" type="reset">คืนค่าเดิม</button>
+                    <button class="btn btn--primary" type="submit">บันทึกการเปลี่ยนแปลง</button>
                 </div>
             </form>
+
+            <div class="danger-zone">
+                <div>
+                    <b>ลบหลักสูตร</b>
+                    <p>ลบได้เฉพาะหลักสูตรที่ยังไม่มีฉบับหลักสูตร · ถ้ามีแล้วให้เปลี่ยนสถานะเป็น "ปิดใช้งาน" แทน</p>
+                    <p class="field__error" id="deleteError" role="alert" hidden></p>
+                </div>
+                <button class="btn btn--danger-outline" type="button" id="programDeleteBtn">ลบหลักสูตร</button>
+            </div>
         </div>
     </section>
+
+    <?php /* ---------- ฟอร์มเพิ่มฉบับ ---------- */ ?>
+    <div class="modal" id="versionModal" role="dialog" aria-modal="true" aria-labelledby="versionModalTitle">
+        <form class="modal__box" id="versionForm" novalidate>
+            <div class="modal__head">
+                <div class="grow">
+                    <h2 id="versionModalTitle">เพิ่มฉบับหลักสูตร</h2>
+                    <p class="muted"><?= Security::escape((string)$selected['name']) ?></p>
+                </div>
+                <button class="modal__close" type="button" data-modal-close aria-label="ปิด">✕</button>
+            </div>
+            <div class="alert alert--danger" id="versionFormError" role="alert" hidden><b></b></div>
+            <div id="versionList" aria-live="polite"></div>
+            <div class="form-grid">
+                <div class="field">
+                    <label class="field__label" for="vNo">ฉบับที่<span class="req">*</span></label>
+                    <input class="input" id="vNo" name="version_no" type="number" min="1" step="1" required aria-describedby="vNoError">
+                    <span class="field__error" id="vNoError" hidden></span>
+                </div>
+                <div class="field">
+                    <label class="field__label" for="vStatus">สถานะ</label>
+                    <select class="select" id="vStatus" name="status">
+                        <?php foreach ($statusLabels as $value => $label): ?>
+                            <option value="<?= Security::escape($value) ?>"><?= Security::escape($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="field__label" for="vFrom">เริ่มใช้</label>
+                    <input class="input" id="vFrom" name="effective_from" type="date">
+                </div>
+                <div class="field">
+                    <label class="field__label" for="vTo">สิ้นสุด</label>
+                    <input class="input" id="vTo" name="effective_to" type="date" aria-describedby="vToError">
+                    <span class="field__error" id="vToError" hidden></span>
+                </div>
+            </div>
+            <div class="modal__foot">
+                <button class="btn btn--ghost" type="button" data-modal-close>ยกเลิก</button>
+                <button class="btn btn--primary" type="submit">เพิ่มฉบับ</button>
+            </div>
+        </form>
+    </div>
 <?php endif; ?>
 
 <?php /* ---------- ฟอร์มเพิ่มหลักสูตร ---------- */ ?>
