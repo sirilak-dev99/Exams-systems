@@ -93,6 +93,7 @@ $router->post('/learning-contents/{id}/delete', [LearningContentController::clas
 // คลังข้อสอบและระบบเวอร์ชันข้อสอบ (Questions & Versions - ลำดับ 22-23)
 $router->get('/questions', [QuestionController::class, 'index']);
 $router->post('/questions', [QuestionController::class, 'store']);
+$router->get('/questions/create', [QuestionController::class, 'create']);
 $router->get('/questions/{id}', [QuestionController::class, 'show']);
 $router->post('/questions/{id}', [QuestionController::class, 'update']);
 $router->post('/questions/{id}/delete', [QuestionController::class, 'destroy']);
@@ -191,9 +192,6 @@ $router->get('/student/exams',   [PageController::class, 'studentExams']);
 $router->get('/student/results', [PageController::class, 'studentResults']);
 $router->get('/student/news',    [PageController::class, 'studentNews']);
 $router->get('/student/profile', [PageController::class, 'studentProfile']);
-
-// 3. หน้าฟอร์มสร้างคำถามแยก
-$router->get('/questions/create', [QuestionController::class, 'create']);
 
 // 4. กลุ่มหน้านำเข้าข้อมูลจาก Excel
 $router->get('/import',          [PageController::class, 'importIndex']);
