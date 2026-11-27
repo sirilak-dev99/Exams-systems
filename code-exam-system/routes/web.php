@@ -115,3 +115,32 @@ $router->get('/exams/{id}', [ExamController::class, 'show']);
 $router->post('/exams/{id}', [ExamController::class, 'update']);
 $router->post('/exams/{id}/sections', [ExamController::class, 'syncSections']);
 $router->post('/exams/{id}/questions', [ExamController::class, 'syncQuestions']);
+
+// Blueprint และการสุ่มข้อสอบ (ลำดับ 29)
+$router->get('/exams/{id}/blueprint', [ExamBlueprintController::class, 'show']);
+$router->post('/exams/{id}/blueprint', [ExamBlueprintController::class, 'store']);
+$router->post('/exams/{id}/blueprint/preview', [ExamBlueprintController::class, 'preview']);
+$router->post('/exams/{id}/blueprint/generate', [ExamBlueprintController::class, 'generate']);
+
+// ระบบเปลี่ยนเวอร์ชันข้อสอบระหว่างสอบ (ลำดับ 31)
+$router->get('/exams/{id}/version-releases', [ExamVersionReleaseController::class, 'index']);
+$router->post('/exams/{id}/version-releases', [ExamVersionReleaseController::class, 'store']);
+
+// กำหนดเวลาและเผยแพร่ชุดสอบ (ลำดับ 32)
+$router->post('/exams/{id}/schedule', [ExamScheduleController::class, 'updateSchedule']);
+$router->get('/exams/{id}/publish-checklist', [ExamScheduleController::class, 'checklist']);
+$router->post('/exams/{id}/publish', [ExamScheduleController::class, 'publish']);
+$router->post('/exams/{id}/close', [ExamScheduleController::class, 'close']);
+
+// สิทธิ์ผู้เข้าสอบและโควตา Grant (ลำดับ 34)
+$router->get('/exams/{id}/eligibilities/candidates', [ExamEligibilityController::class, 'candidates']);
+$router->get('/exams/{id}/eligibilities', [ExamEligibilityController::class, 'index']);
+$router->post('/exams/{id}/eligibilities', [ExamEligibilityController::class, 'store']);
+$router->post('/eligibilities/{id}/grants', [ExamEligibilityController::class, 'addGrant']);
+$router->post('/eligibilities/{id}/revoke', [ExamEligibilityController::class, 'revoke']);
+$router->post('/eligibility-grants/{id}/revoke', [ExamEligibilityController::class, 'revokeGrant']);
+
+// รหัสเข้าสอบ 5 ตัวอักษร (ลำดับ 35)
+$router->get('/exams/{id}/access-codes', [ExamAccessCodeController::class, 'index']);
+$router->post('/exams/{id}/access-codes', [ExamAccessCodeController::class, 'store']);
+$router->post('/access-codes/{id}/revoke', [ExamAccessCodeController::class, 'revoke']);
