@@ -856,3 +856,25 @@ body.layout-auth { background: var(--c-bg); }
 @media (max-width: 900px) { .student-home { grid-template-columns: 1fr; } .dash-hero__art { display: none; } }
 .shortcuts--big .is-soon .quick__icon { background: var(--c-primary); }
 .nav__link, .nav__link--soon { padding: 0 14px; gap: 12px; font-size: 16px; }
+
+/* ==================== 23. หน้ากลุ่มเรียนและผู้สอน ==================== */
+.trail { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 16px; color: var(--c-neutral); }
+.trail a { color: var(--c-primary); }
+.trail__back { padding-right: 12px; margin-right: 4px; border-right: 1px solid var(--c-primary-line); text-decoration: none; font-weight: 600; }
+.trail b { color: var(--c-ink); }
+.page-title h1 { font-size: 30px; color: var(--c-ink); }
+.page-title p { color: var(--c-text-2); }
+.groups { gap: 18px; }
+.groups__coord { max-width: 420px; }
+.groups .table th { font-size: 16px; font-weight: 700; color: var(--c-ink); background: #EEE7FB; }
+.person-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.person-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 6px 0 16px; border-radius: 999px;
+  background: var(--c-primary); color: #FFF; font-weight: 600; font-size: 15px;
+}
+.person-chip:not(:has(.person-chip__remove)) { padding-right: 16px; }
+.person-chip small { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: rgba(255, 255, 255, .22); }
+.person-chip--lead { background: var(--c-primary-dark); }
+.person-chip__remove { width: 28px; height: 28px; border-radius: 999px; border: 0; background: rgba(255, 255, 255, .18); color: #FFF; cursor: pointer; font-size: 12px; }
+.person-chip__remove:hover { background: rgba(255, 255, 255, .32); }
+.select--inline { width: auto; min-height: 40px; }
