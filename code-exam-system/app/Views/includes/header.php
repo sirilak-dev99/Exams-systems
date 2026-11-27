@@ -34,7 +34,7 @@ $cssVer  = is_file($cssFile) ? (string)filemtime($cssFile) : '1';
     <div class="main">
         <?php /* ---------- แถบบน ---------- */ ?>
         <header class="topbar">
-            <div class="crumbs"><?= ui_icon('home', 20) ?><b><?= Security::escape($pageTitle) ?></b></div>
+            <div class="crumbs"><?= ui_icon('home', 20) ?><b><?= Security::escape($crumbTitle ?? $pageTitle) ?></b></div>
             <?php /* ---------- เมนูโปรไฟล์ ---------- */ ?>
             <details class="profile">
                 <summary class="user" aria-label="เมนูผู้ใช้">

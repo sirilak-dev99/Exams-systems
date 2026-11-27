@@ -1,7 +1,7 @@
 <?php
 // ---------- ค่าพื้นฐาน ----------
 $courseGroups = $courseGroups ?? [];
-$pageTitle    = 'หลักสูตรและรายวิชา';
+$crumbTitle = 'หลักสูตรและรายวิชา';
 require dirname(__DIR__) . '/includes/header.php';
 
 // ---------- ตัวกรอง ----------

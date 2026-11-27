@@ -3,7 +3,7 @@
 $user        = $user ?? Security::currentUser() ?? [];
 $userRoles   = (array)($user['roles'] ?? []);
 $isStaffHome = array_intersect($userRoles, ['admin', 'academic_staff']) && !in_array('instructor', $userRoles, true);
-$pageTitle   = $isStaffHome ? 'Dashboard' : 'หน้าหลัก';
+$crumbTitle  = $isStaffHome ? 'Dashboard' : 'หน้าหลัก';
 require __DIR__ . '/includes/header.php';
 
 $name          = (string)($user['display_name'] ?? '');

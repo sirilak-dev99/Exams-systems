@@ -1,21 +1,26 @@
 <?php
 // ---------- ค่าพื้นฐาน ----------
 $courseOfferings = $courseOfferings ?? [];
-$pageTitle       = 'หลักสูตรและรายวิชา';
+$crumbTitle = 'หลักสูตรและรายวิชา';
 require dirname(__DIR__) . '/includes/header.php';
 
 // ---------- ตัวกรอง ----------
 $termId   = trim((string)($_GET['academic_terms_id'] ?? ''));
+$courseId = trim((string)($_GET['courses_id'] ?? ''));
 $status   = (string)($_GET['status'] ?? '');
-$filtered = $termId !== '' || $status !== '';
+$filtered = $termId !== '' || $courseId !== '' || $status !== '';
 
-$termOptions = [];
+$termOptions   = [];
+$courseOptions = [];
 foreach ($courseOfferings as $o) {
     $termOptions[(int)$o['academic_terms_id']] = (int)$o['term_no'] . '/' . (int)$o['academic_year'];
+    $courseOptions[(int)$o['courses_id']]      = $o['course_code'] . ' ' . $o['course_name'];
 }
+asort($courseOptions);
 
 // ---------- ข้อความ ----------
-$statusLabels = ['open' => 'เปิดสอน', 'completed' => 'สิ้นสุดภาค', 'closed' => 'ปิดแล้ว'];
+$statusLabels  = ['open' => 'เปิดสอน', 'completed' => 'สิ้นสุดภาค', 'closed' => 'ปิดแล้ว'];
+$statusFilters = ['open' => 'เปิดสอน', 'closed' => 'ปิดแล้ว'];
 $percent = function ($value): string {
     if ($value === null || $value === '') {
         return '—';
@@ -37,11 +42,20 @@ $percent = function ($value): string {
                 <?php endforeach; ?>
             </select>
         </div>
+        <div class="field">
+            <label class="field__label" for="fCourse">รายวิชา</label>
+            <select class="select" id="fCourse" name="courses_id">
+                <option value="">ทุกรายวิชา</option>
+                <?php foreach ($courseOptions as $id => $label): ?>
+                    <option value="<?= $id ?>"<?= $courseId === (string)$id ? ' selected' : '' ?>><?= Security::escape($label) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
         <div class="field field--sm">
             <label class="field__label" for="fStatus">สถานะ</label>
             <select class="select" id="fStatus" name="status">
                 <option value="">ทุกสถานะ</option>
-                <?php foreach ($statusLabels as $value => $label): ?>
+                <?php foreach ($statusFilters as $value => $label): ?>
                     <option value="<?= Security::escape($value) ?>"<?= $status === $value ? ' selected' : '' ?>><?= Security::escape($label) ?></option>
                 <?php endforeach; ?>
             </select>
