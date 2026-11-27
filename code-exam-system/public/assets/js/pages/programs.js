@@ -609,10 +609,12 @@
 
             var actions = el('td', 'nowrap num');
             var groupsLink = el('a', 'btn btn--secondary btn--sm', 'กลุ่มเรียน · ผู้สอน');
-            groupsLink.href = Api.url('/course-offerings?' + new URLSearchParams({
-                courses_id: b.courses_id,
-                academic_terms_id: selectedTerm || ''
-            }).toString());
+            groupsLink.href = offering
+                ? Api.url('/course-offerings?offering=' + encodeURIComponent(offering.id_course_offerings))
+                : Api.url('/course-offerings?' + new URLSearchParams({
+                    courses_id: b.courses_id,
+                    academic_terms_id: selectedTerm || ''
+                }).toString());
             groupsLink.setAttribute('aria-label', 'กลุ่มเรียนและผู้สอนของ ' + b.course_name);
             var edit = el('button', 'link-btn', 'แก้ไข');
             edit.type = 'button';
