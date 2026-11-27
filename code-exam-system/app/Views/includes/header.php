@@ -42,7 +42,20 @@ $scripts   = array_merge(['/js/api.js'], (array)($pageScripts ?? []));
     <div class="main">
         <?php /* ---------- แถบบน ---------- */ ?>
         <header class="topbar">
-            <div class="crumbs"><?= ui_icon('home', 20) ?><b><?= Security::escape($crumbTitle ?? $pageTitle) ?></b></div>
+            <a class="crumbs" href="<?= Security::escape($appUrl) ?>/"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.5v9.5h5.5v-6h3v6H19V11h2.5z" fill="currentColor"/></svg><b><?= Security::escape($crumbTitle ?? $pageTitle) ?></b></a>
+            <?php /* ---------- ค้นหา ---------- */ ?>
+            <?php
+            $userRoles = (array)($authUser['roles'] ?? []);
+            $searchHint = array_intersect($userRoles, ['admin', 'academic_staff']) && !in_array('instructor', $userRoles, true)
+                ? 'ค้นหาผู้ใช้ รายวิชา หรือหลักสูตร...'
+                : (in_array('instructor', $userRoles, true) ? 'ค้นหารายวิชา ชุดสอบ หรือข้อสอบ...' : 'ค้นหารายวิชา การสอบ หรือเนื้อหา...');
+            ?>
+            <label class="topbar__search" title="การค้นหาจะเปิดใช้เร็วๆ นี้">
+                <?= ui_icon('search', 22) ?>
+                <input type="search" placeholder="<?= Security::escape($searchHint) ?>" aria-label="ค้นหา (เร็วๆ นี้)" readonly>
+            </label>
+            <span class="topbar__bell" title="การแจ้งเตือน · เร็วๆ นี้" aria-label="การแจ้งเตือน (เร็วๆ นี้)" role="img"><?= ui_icon('bell', 26) ?></span>
+            <span class="topbar__sep" aria-hidden="true"></span>
             <?php /* ---------- เมนูโปรไฟล์ ---------- */ ?>
             <details class="profile">
                 <summary class="user" aria-label="เมนูผู้ใช้">
