@@ -5,7 +5,7 @@ require_once __DIR__ . '/helpers.php';
 $pageTitle = $pageTitle ?? 'ระบบสอบกลางคณะ';
 $appUrl    = rtrim((string)env('APP_URL', ''), '/');
 $authUser  = Security::currentUser();
-$layout    = $authUser !== null ? 'app' : 'default';
+$layout    = $authUser !== null ? 'app' : (!empty($authLayout) ? 'auth' : 'default');
 
 // ---------- เวอร์ชันไฟล์ ----------
 $assetsDir = dirname(__DIR__, 3) . '/public/assets';
@@ -76,6 +76,9 @@ $scripts   = array_merge(['/js/api.js'], (array)($pageScripts ?? []));
 
         <?php /* ---------- เนื้อหา ---------- */ ?>
         <main id="content" class="content">
+<?php elseif ($layout === 'auth'): ?>
+<?php /* ---------- เนื้อหา (หน้าเข้าสู่ระบบ) ---------- */ ?>
+<main id="content" class="auth">
 <?php else: ?>
 <?php /* ---------- แถบบน (ยังไม่เข้าสู่ระบบ) ---------- */ ?>
 <header class="site-header">
