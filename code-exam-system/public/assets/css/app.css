@@ -58,6 +58,7 @@ a { color: var(--c-primary); }
 a:hover { color: var(--c-primary-hover); }
 svg { flex: none; }
 :focus-visible { outline: none; box-shadow: var(--focus); border-radius: 6px; }
+[hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .skip-link { position: absolute; left: 12px; top: -60px; z-index: 200; background: var(--c-ink); color: #fff; padding: 10px 16px; border-radius: var(--radius); }
 .skip-link:focus { top: 12px; color: #fff; }
