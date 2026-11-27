@@ -13,7 +13,7 @@
  *    $options           ตัวเลือกของฉบับล่าสุด [label, text, is_correct]
  *    $selectedLoIds     CLO ที่ผูกอยู่ · $latestVersionNo  เลขฉบับล่าสุด
  *    $courses / $chapters / $learningOutcomes / $bloomLevels / $scenarios  ตัวเลือกในฟอร์ม
- *        (บทและ CLO ส่งมาทุกวิชา หน้ากรองตามรายวิชาที่เลือกด้วย JS)
+ *        (บทและ CLO ส่งมาทุกวิชา · ตอนนี้แสดงทุกวิชา ยังไม่กรองตามรายวิชาที่เลือก)
  *    $old / $error / $errors  เมื่อบันทึกไม่ผ่าน — $errors = ['ชื่อช่อง' => 'ข้อความ'] แสดงใต้ช่องนั้น
  * ------------------------------------------------------------
  *  ค่าที่ฟอร์มส่ง (POST)
@@ -186,11 +186,9 @@ $invalid = fn (string $key) => isset($errors[$key]) ? ' aria-invalid="true"' : '
                         <input class="input input--label" name="options[<?= $i ?>][label]" value="<?= Security::escape((string)$o['label']) ?>" aria-label="ลำดับตัวเลือก" maxlength="20">
                         <input class="input" name="options[<?= $i ?>][text]" value="<?= Security::escape((string)$o['text']) ?>" aria-label="ข้อความตัวเลือก <?= Security::escape((string)$o['label']) ?>" placeholder="ข้อความตัวเลือก">
                         <label class="check" data-show-for="multiple_choice"><input type="checkbox" name="options[<?= $i ?>][is_correct]" value="1" <?= (int)($o['is_correct'] ?? 0) === 1 ? 'checked' : '' ?>>ถูก</label>
-                        <button class="btn btn--ghost btn--sm" type="button" data-remove-row aria-label="ลบตัวเลือกนี้">ลบ</button>
                     </div>
                 <?php endforeach; ?>
             </div>
-            <p><button class="btn btn--secondary btn--sm" type="button" id="addRow">+ เพิ่มตัวเลือก</button></p>
             <?= $err('options') ?>
         </div>
 
@@ -267,73 +265,4 @@ $invalid = fn (string $key) => isset($errors[$key]) ? ' aria-invalid="true"' : '
 </aside>
 </div>
 
-<?php /* ==================== JS ในหน้า: แสดง/ซ่อนช่องตามชนิด · กรองบท/CLO ตามรายวิชา · เพิ่ม/ลบแถวตัวเลือก (ไม่เรียก API) ==================== */ ?>
-<script>
-// แสดง/ซ่อนช่องตามชนิดข้อสอบ + กรองบท/CLO ตามรายวิชา (ไม่เรียก API — ข้อมูลอยู่ในหน้าแล้ว)
-(function () {
-    var form = document.getElementById('qForm');
-    var hints = <?= json_encode($questionTypeHints, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?>;
-
-    function applyType() {
-        var t = (form.querySelector('input[name="type"]:checked') || {}).value || 'multiple_choice';
-        form.querySelectorAll('[data-show-for]').forEach(function (el) {
-            var on = el.getAttribute('data-show-for').split(' ').indexOf(t) !== -1;
-            el.hidden = !on;
-            // ช่องที่ซ่อนอยู่ไม่ส่งค่า (แต่ไม่ปิดช่องที่ยังอยู่ในบล็อกที่แสดง)
-            el.querySelectorAll('input, textarea, select').forEach(function (inp) {
-                var visible = true;
-                for (var p = inp.closest('[data-show-for]'); p; p = p.parentElement && p.parentElement.closest('[data-show-for]')) {
-                    if (p.getAttribute('data-show-for').split(' ').indexOf(t) === -1) { visible = false; break; }
-                }
-                inp.disabled = !visible;
-            });
-        });
-        document.getElementById('typeHint').textContent = hints[t] || '';
-    }
-
-    function applyCourse() {
-        var c = document.getElementById('courses_id').value;
-        var ch = document.getElementById('chapters_id');
-        Array.prototype.forEach.call(ch.options, function (o) {
-            if (!o.value) return;
-            o.hidden = o.disabled = o.getAttribute('data-course') !== c;
-            if (o.hidden && o.selected) ch.value = '';
-        });
-        var shown = 0;
-        form.querySelectorAll('#loList [data-course]').forEach(function (l) {
-            var on = l.getAttribute('data-course') === c;
-            l.hidden = !on;
-            l.querySelector('input').disabled = !on;
-            if (on) shown++;
-        });
-        var empty = document.getElementById('loEmpty');
-        if (empty) empty.hidden = shown > 0;
-    }
-
-    // เพิ่ม/ลบแถวตัวเลือก
-    var rows = document.getElementById('optRows');
-    var thai = ['ก', 'ข', 'ค', 'ง', 'จ', 'ฉ', 'ช', 'ซ', 'ฌ', 'ญ'];
-    document.getElementById('addRow').addEventListener('click', function () {
-        var n = rows.children.length;
-        var tpl = rows.children[0].cloneNode(true);
-        tpl.querySelectorAll('input').forEach(function (inp) {
-            inp.name = inp.name.replace(/options\[\d+\]/, 'options[' + n + ']');
-            if (inp.type === 'checkbox') inp.checked = false; else inp.value = '';
-        });
-        tpl.querySelector('.input--label').value = thai[n] || String(n + 1);
-        rows.appendChild(tpl);
-        applyType();
-        tpl.querySelector('.input:not(.input--label)').focus();
-    });
-    rows.addEventListener('click', function (e) {
-        var btn = e.target.closest('[data-remove-row]');
-        if (btn && rows.children.length > 1) btn.closest('.opt-row').remove();
-    });
-
-    form.querySelectorAll('input[name="type"]').forEach(function (r) { r.addEventListener('change', applyType); });
-    document.getElementById('courses_id').addEventListener('change', applyCourse);
-    applyType();
-    applyCourse();
-})();
-</script>
 <?php require dirname(__DIR__) . '/includes/footer.php'; ?>

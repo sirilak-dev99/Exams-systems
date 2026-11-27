@@ -120,15 +120,4 @@ $modeLabels = [
     </div>
 </form>
 
-<?php /* ==================== ปฏิทินเลือกวันเวลา (Flatpickr 24 ชม.) ==================== */ ?>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
-<script>
-    flatpickr(".datetime-24h", {
-        enableTime: true,
-        time_24hr: true,
-        dateFormat: "Y-m-d H:i",
-    });
-</script>
-
 <?php require dirname(__DIR__) . '/includes/footer.php'; ?>

@@ -88,17 +88,13 @@ if (!function_exists('thai_date')) {
 }
 
 ?>
-<?php /* ==================== 4. <head>: ชื่อหน้า · meta ของ api.js · ฟอนต์ · CSS ==================== */ ?>
+<?php /* ==================== 4. <head>: ชื่อหน้า · ฟอนต์ · CSS ==================== */ ?>
 <!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= Security::escape($pageTitle) ?> · ระบบจัดการคลังข้อสอบและทดสอบออนไลน์</title>
-<?php /* ค่าที่ assets/js/api.js อ่าน — routes ไม่มี prefix /api/v1 จึงใช้ path ของ APP_URL */ ?>
-<meta name="api-base" content="<?= Security::escape((string)(parse_url($appUrl, PHP_URL_PATH) ?: '')) ?>">
-<meta name="login-url" content="<?= Security::escape((string)(parse_url($appUrl, PHP_URL_PATH) ?: '')) ?>/login">
-<meta name="csrf-token" content="<?= Security::escape(Security::csrfToken()) ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
