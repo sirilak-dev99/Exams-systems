@@ -12,30 +12,30 @@ if ($isStaff && !$isTeacher) {
     $navGroups['งานวิชาการ'] = [
         ['หน้าหลัก',           'home',   '/',         'dashboard',      []],
         ['หลักสูตรและรายวิชา', 'school', '/programs', 'programs/index', $catalog],
-        ['จัดการนิสิต',         'users',  null,        null,             []],
+        ['จัดการนิสิต',         'users',  '/admin/students', 'admin/students', []],
         ['ติดตามผลการสอบ',     'chart',  null,        null,             []],
-        ['ประชาสัมพันธ์',       'news',   null,        null,             []],
+        ['ประชาสัมพันธ์',       'news',   '/admin/news',     'admin/news',     []],
     ];
 } else {
     $navGroups[''] = [['หน้าหลัก', 'home', '/', 'dashboard', []]];
     if ($isTeacher) {
         $navGroups[''][] = ['จัดการรายวิชา',   'book',  null, null, []];
-        $navGroups[''][] = ['คลังข้อสอบ',      'bank',  null, null, []];
-        $navGroups[''][] = ['จัดการชุดสอบ',    'clip',  null, null, []];
+        $navGroups[''][] = ['คลังข้อสอบ',      'bank',  '/questions',        'questions/index',  ['/questions/create']];
+        $navGroups[''][] = ['จัดการชุดสอบ',    'clip',  '/exams',            'exams/create',     ['/exams/create']];
         $navGroups[''][] = ['ผลสอบและรายงาน', 'chart', null, null, []];
     } else {
-        $navGroups[''][] = ['รายวิชาของฉัน',     'book',  null, null, []];
-        $navGroups[''][] = ['การสอบของฉัน',     'clip',  null, null, []];
-        $navGroups[''][] = ['ผลการสอบ',         'chart', null, null, []];
-        $navGroups[''][] = ['ข่าวประชาสัมพันธ์', 'news',  null, null, []];
-        $navGroups[''][] = ['โปรไฟล์',          'user',  null, null, []];
+        $navGroups[''][] = ['รายวิชาของฉัน',     'book',  '/student/courses', 'student/courses', []];
+        $navGroups[''][] = ['การสอบของฉัน',     'clip',  '/student/exams',   'student/exams',   []];
+        $navGroups[''][] = ['ผลการสอบ',         'chart', '/student/results', 'student/results', []];
+        $navGroups[''][] = ['ข่าวประชาสัมพันธ์', 'news',  '/student/news',    'student/news',    []];
+        $navGroups[''][] = ['โปรไฟล์',          'user',  '/student/profile', 'student/profile', []];
     }
 }
 if ($isAdmin) {
     $navGroups['ระบบ'] = [
-        ['ผู้ใช้และสิทธิ์',  'shield', null, null, []],
+        ['ผู้ใช้และสิทธิ์',  'shield', '/admin/users',    'admin/users',    ['/admin/roles']],
         ['บันทึกการใช้งาน', 'log',    null, null, []],
-        ['ตั้งค่าระบบ',      'gear',   null, null, []],
+        ['ตั้งค่าระบบ',      'gear',   '/admin/settings', 'admin/settings', []],
     ];
 }
 
