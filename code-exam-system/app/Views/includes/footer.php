@@ -1,1 +1,7 @@
-</main><footer class="site-footer">ระบบสอบกลางคณะ · Development</footer></body></html>
+<?php /* ---------- ปิดเนื้อหา ---------- */ ?>
+</main>
+
+<?php /* ---------- ส่วนท้าย ---------- */ ?>
+<footer class="site-footer">ระบบสอบกลางคณะ · คณะพยาบาลศาสตร์</footer>
+</body>
+</html>
