@@ -835,3 +835,22 @@ body.layout-auth { background: var(--c-bg); }
 .auth__or::before, .auth__or::after { content: ""; flex: 1; border-top: 1px dashed #B9AEDB; }
 .auth__help { font-size: 15px; color: var(--c-text-2); }
 @media (max-width: 900px) { .auth { grid-template-columns: 1fr; } .auth__brand { padding: 36px 24px; } .auth__brand h1 { font-size: 28px; } }
+
+/* ==================== 22. หน้าแรกตามดีไซน์ ==================== */
+.dash-hero { position: relative; overflow: hidden; border: 0; }
+.dash-hero__art { position: absolute; right: 24px; bottom: 0; width: 470px; max-width: 46%; height: auto; pointer-events: none; }
+.dash-hero .greet__text { position: relative; }
+.dash-hero p { font-size: 17px; }
+.greet--art { border: 0; }
+.shortcuts .is-soon { color: var(--c-ink); font-weight: 600; cursor: default; }
+.shortcuts .is-soon .chev { margin-left: auto; color: var(--c-ink); }
+.notice-box { border: 1px solid #A78BFA; background: #EDE5FC; border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; }
+.notice-box p { margin: 0; }
+.notice-box__label { display: flex; align-items: center; gap: 8px; color: var(--c-primary); font-weight: 700; font-size: 15px; }
+.notice-box__title { padding-left: 28px; color: var(--c-text); }
+.notice-box__date { padding-left: 28px; font-size: 14px; color: var(--c-neutral); }
+.student-home { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.student-home section { display: flex; flex-direction: column; gap: 10px; }
+.student-home__side { display: flex; flex-direction: column; gap: 18px; }
+.student-home__title { font-size: 17px; font-weight: 700; color: var(--c-ink); }
+@media (max-width: 900px) { .student-home { grid-template-columns: 1fr; } .dash-hero__art { display: none; } }
