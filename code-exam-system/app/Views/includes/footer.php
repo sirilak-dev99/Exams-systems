@@ -1,12 +1,9 @@
 <?php
 /**
  * ============================================================
- *  footer.php — ปิดหน้าและโหลด JS กลาง (ใช้คู่กับ header.php เสมอ)
+ *  footer.php — ปิดหน้า (ใช้คู่กับ header.php เสมอ)
  * ------------------------------------------------------------
- *  JS ที่โหลดทุกหน้า
- *    assets/js/api.js  HTTP client กลาง (fetch) อ่าน { data, error } ตาม docs/api_contract.md
- *    assets/js/ui.js   Modal · Toast · UI.confirm() · แสดง error ใต้ช่องกรอก · ปุ่มกำลังโหลด · ข้อความไทยของ enum
- *  ตั้งก่อน include ได้: $pageJs = ['assets/js/pages/xxx.js']  (JS เฉพาะหน้า โหลดหลัง api.js / ui.js)
+ *  ตอนนี้ไม่มี JS กลาง · ตั้งก่อน include ได้: $pageJs = ['assets/js/xxx.js']  (JS เฉพาะหน้า)
  *  ทุกไฟล์ต่อท้าย ?v=เวลาแก้ไฟล์ กันเบราว์เซอร์ใช้ไฟล์เก่า
  * ============================================================
  */
@@ -32,9 +29,7 @@ $jsUrl  = function (string $path) use ($appUrl): string {
 <?php else: ?>
 </main><footer class="site-footer">ระบบจัดการคลังข้อสอบและทดสอบออนไลน์ · Development</footer>
 <?php endif; ?>
-<?php /* ==================== JS กลางทุกหน้า แล้วตามด้วย JS เฉพาะหน้า ($pageJs) ==================== */ ?>
-<script src="<?= Security::escape($jsUrl('assets/js/api.js')) ?>"></script>
-<script src="<?= Security::escape($jsUrl('assets/js/ui.js')) ?>"></script>
+<?php /* ==================== JS เฉพาะหน้า ($pageJs) ==================== */ ?>
 <?php foreach (($pageJs ?? []) as $js): ?>
 <script src="<?= Security::escape($jsUrl((string)$js)) ?>"></script>
 <?php endforeach; ?>
