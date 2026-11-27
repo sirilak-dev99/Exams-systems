@@ -23,6 +23,7 @@ if (!function_exists('ui_icon')) {
             'bolt'      => '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
             'arrow'     => '<path d="M5 12h14M13 6l6 6-6 6"/>',
             'chev'      => '<path d="m9 6 6 6-6 6"/>',
+            'bell'      => '<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/>',
             'inbox'     => '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/>',
             'search'    => '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
             'shield'    => '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
