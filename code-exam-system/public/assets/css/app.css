@@ -747,3 +747,7 @@ body.layout-default { font-family: Tahoma, "Noto Sans Thai", sans-serif; color: 
 .link-btn:hover { text-decoration: underline; }
 .link-btn--danger { color: var(--c-danger); }
 @media (max-width: 700px) { .hub-hero { flex-direction: column; align-items: flex-start; } .hub-hero h1 { font-size: 28px; } }
+fieldset.pills { border: 0; margin: 0; padding: 0; min-width: 0; }
+.pill input { accent-color: var(--c-primary); margin: 0 8px 0 0; }
+label.pill { cursor: pointer; }
+label.pill:has(input:checked) { border: 2px solid var(--c-primary); background: #EDE5FC; color: var(--c-ink); font-weight: 700; padding: 0 15px; }
