@@ -98,3 +98,20 @@ $router->post('/questions/{id}', [QuestionController::class, 'update']);
 $router->post('/questions/{id}/delete', [QuestionController::class, 'destroy']);
 $router->get('/questions/{id}/versions', [QuestionController::class, 'versions']);
 $router->post('/questions/{id}/versions/{versionId}', [QuestionController::class, 'deleteVersion']);
+
+// สถานการณ์ข้อสอบและการผูกแนวคิดกับเวอร์ชันข้อสอบ (ลำดับ 26)
+$router->get('/question-scenarios', [QuestionScenarioController::class, 'index']);
+$router->post('/question-scenarios', [QuestionScenarioController::class, 'store']);
+$router->get('/question-scenarios/{id}', [QuestionScenarioController::class, 'show']);
+$router->post('/question-scenarios/{id}', [QuestionScenarioController::class, 'update']);
+$router->get('/questions/{id}/versions/{versionId}/concepts', [QuestionScenarioController::class, 'getVersionConcepts']);
+$router->post('/questions/{id}/versions/{versionId}/concepts', [QuestionScenarioController::class, 'syncVersionConcepts']);
+$router->post('/questions/{id}/scenario', [QuestionScenarioController::class, 'attachScenario']);
+
+// ชุดข้อสอบ (Exams, Exam Sections, Exam Questions - ลำดับ 27)
+$router->get('/exams', [ExamController::class, 'index']);
+$router->post('/exams', [ExamController::class, 'store']);
+$router->get('/exams/{id}', [ExamController::class, 'show']);
+$router->post('/exams/{id}', [ExamController::class, 'update']);
+$router->post('/exams/{id}/sections', [ExamController::class, 'syncSections']);
+$router->post('/exams/{id}/questions', [ExamController::class, 'syncQuestions']);
