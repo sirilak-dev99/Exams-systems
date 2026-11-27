@@ -4,10 +4,12 @@ $user        = $user ?? Security::currentUser() ?? [];
 $userRoles   = (array)($user['roles'] ?? []);
 $isStaffHome = array_intersect($userRoles, ['admin', 'academic_staff']) && !in_array('instructor', $userRoles, true);
 $crumbTitle  = $isStaffHome ? 'Dashboard' : 'หน้าหลัก';
+$pageScripts = ['/js/pages/dashboard.js'];
 require __DIR__ . '/includes/header.php';
 
 $name          = (string)($user['display_name'] ?? '');
 $isTeacher     = in_array('instructor', (array)($user['roles'] ?? []), true);
+$isStudent     = !$isStaffHome && !$isTeacher;
 $currentTerm   = $currentTerm ?? null;
 $announcements = (array)($announcements ?? []);
 $courses       = array_slice((array)($courses ?? []), 0, 3);
@@ -43,11 +45,21 @@ $tiles = [
 <?php if ($isStaffHome): ?>
 <?php /* ---------- หัว Dashboard ---------- */ ?>
 <section class="greet dash-hero" aria-label="Dashboard">
-    <span class="dash-hero__icon"><?= ui_icon('home', 40) ?></span>
+    <span class="dash-hero__icon"><?= ui_icon('home', 56) ?></span>
     <div class="greet__text">
         <h1>Dashboard</h1>
-        <p>ภาพรวมระบบ<?= $currentTerm !== null ? ' · ภาคการศึกษา ' . Security::escape((string)$currentTerm) : '' ?></p>
+        <p>ภาพรวมระบบ<span data-current-term><?= $currentTerm !== null ? ' · ภาคการศึกษา ' . Security::escape((string)$currentTerm) : '' ?></span></p>
     </div>
+    <svg class="dash-hero__art" viewBox="0 0 470 140" aria-hidden="true" focusable="false">
+        <path d="M104 22v20M94 32h20M410 14v28M396 28h28" stroke="#C4B0EE" stroke-width="8" stroke-linecap="round"/>
+        <path d="M20 128c-8-40 14-70 52-80-4 40-20 64-52 80z" fill="#D9CCF5"/>
+        <path d="M42 134c8-34 36-50 68-46-14 30-38 44-68 46z" fill="#C4B0EE"/>
+        <rect x="190" y="0" width="96" height="124" rx="10" fill="#FFFFFF"/>
+        <path d="M218 38l10 10 20-20M218 76l10 10 20-20" stroke="#A78BFA" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <rect x="310" y="94" width="20" height="30" rx="3" fill="#C4B0EE"/>
+        <rect x="338" y="68" width="20" height="56" rx="3" fill="#B79DEB"/>
+        <rect x="366" y="30" width="20" height="94" rx="3" fill="#A78BFA"/>
+    </svg>
 </section>
 
 <?php /* ---------- ตัวเลขสรุป ---------- */ ?>
@@ -56,9 +68,9 @@ $tiles = [
         <?php $value = $stats[$key]['value'] ?? null; $sub = $stats[$key]['sub'] ?? ''; ?>
         <li>
             <?php if ($href !== null): ?><a class="dash-tile" href="<?= Security::escape($appUrl . $href) ?>"><?php else: ?><span class="dash-tile"><?php endif; ?>
-                <b><?= $value !== null ? Security::escape(number_format((float)$value)) : '—' ?></b>
+                <b data-tile-value="<?= Security::escape($key) ?>"><?= $value !== null ? Security::escape(number_format((float)$value)) : '—' ?></b>
                 <span class="dash-tile__label"><?= Security::escape($label) ?></span>
-                <span class="dash-tile__sub"><?= $sub !== '' ? Security::escape((string)$sub) : 'ยังไม่มีข้อมูล' ?></span>
+                <span class="dash-tile__sub" data-tile-sub="<?= Security::escape($key) ?>"><?= $sub !== '' ? Security::escape((string)$sub) : 'ยังไม่มีข้อมูล' ?></span>
             <?php if ($href !== null): ?></a><?php else: ?></span><?php endif; ?>
         </li>
     <?php endforeach; ?>
@@ -80,7 +92,7 @@ $tiles = [
     </section>
 
     <?php /* ---------- กิจกรรมล่าสุด ---------- */ ?>
-    <section class="card" aria-label="กิจกรรมล่าสุด">
+    <section class="card" aria-label="กิจกรรมล่าสุด" id="activityCard">
         <div class="sec-title"><h2>กิจกรรมล่าสุดในระบบ</h2></div>
         <?php if ($activities): ?>
             <ul class="dash-list dash-list--log">
@@ -121,10 +133,12 @@ $tiles = [
 <?php /* ---------- ทักทาย ---------- */ ?>
 <section class="greet greet--art" aria-label="สวัสดี <?= Security::escape($name) ?>">
     <div class="greet__text">
-        <h1>สวัสดี, <?= Security::escape($name) ?></h1>
-        <p>ติดตามข่าวสาร รายวิชาที่สอน และเนื้อหาการเรียนได้ที่นี่</p>
-        <?php if ($currentTerm !== null): ?>
-            <p><span class="chip chip--lg"><?= ui_icon('calendar', 18) ?>ภาคการศึกษา <?= Security::escape((string)$currentTerm) ?> (ปัจจุบัน)</span></p>
+        <h1>สวัสดี<?= $isStudent ? ' ' : ', ' ?><?= Security::escape($name) ?></h1>
+        <?php if ($isStudent): ?>
+            <p><?= $currentTerm !== null ? 'ภาค ' . Security::escape((string)$currentTerm) . ' · ' : '' ?>ดูการสอบที่ทำได้ กำหนดสอบ และผลสอบล่าสุดได้ที่นี่</p>
+        <?php else: ?>
+            <p>ติดตามข่าวสาร รายวิชาที่สอน และเนื้อหาการเรียนได้ที่นี่</p>
+            <p<?= $currentTerm === null ? ' hidden' : '' ?> data-term-chip><span class="chip chip--lg chip--term"><?= ui_icon('calendar', 18) ?><span data-term-chip-text>ภาคการศึกษา <?= Security::escape((string)$currentTerm) ?> (ปัจจุบัน)</span></span></p>
         <?php endif; ?>
     </div>
     <svg class="greet__art" viewBox="0 0 390 160" aria-hidden="true" focusable="false">
@@ -137,6 +151,38 @@ $tiles = [
     </svg>
 </section>
 
+<?php if ($isStudent): ?>
+<?php /* ---------- ประกาศจากคณะ ---------- */ ?>
+<section class="notice-box" aria-label="ประกาศจากคณะ">
+    <p class="notice-box__label"><?= ui_icon('news', 20) ?>ประกาศจากคณะ</p>
+    <?php if ($announcements): $a = $announcements[0]; ?>
+        <p class="notice-box__title"><?= Security::escape((string)($a['title'] ?? '')) ?></p>
+        <?php if (!empty($a['date'])): ?><p class="notice-box__date"><?= Security::escape(thai_date((string)$a['date'])) ?></p><?php endif; ?>
+    <?php else: ?>
+        <p class="notice-box__title">ยังไม่มีประกาศ</p>
+    <?php endif; ?>
+</section>
+
+<div class="student-home">
+    <?php /* ---------- สอบได้ตอนนี้ ---------- */ ?>
+    <section aria-labelledby="hOpen">
+        <h2 class="student-home__title" id="hOpen">สอบได้ตอนนี้</h2>
+        <div class="card"><?= $empty('ยังไม่มีชุดสอบที่เปิดให้ทำ', 'เมื่ออาจารย์เปิดสอบ ชุดสอบจะแสดงที่นี่') ?></div>
+    </section>
+    <div class="student-home__side">
+        <?php /* ---------- กำลังจะเปิด ---------- */ ?>
+        <section aria-labelledby="hSoon">
+            <h2 class="student-home__title" id="hSoon">กำลังจะเปิด</h2>
+            <div class="card"><?= $empty('ยังไม่มีกำหนดสอบ') ?></div>
+        </section>
+        <?php /* ---------- ผลสอบล่าสุด ---------- */ ?>
+        <section aria-labelledby="hResult">
+            <h2 class="student-home__title" id="hResult">ผลสอบล่าสุด</h2>
+            <div class="card"><?= $empty('ยังไม่มีผลสอบ') ?></div>
+        </section>
+    </div>
+</div>
+<?php else: ?>
 <?php /* ---------- ประกาศสำคัญ ---------- */ ?>
 <section class="card announce" aria-label="ประกาศสำคัญ">
     <span class="announce__icon"><?= ui_icon('news', 28) ?></span>
@@ -189,7 +235,7 @@ $tiles = [
                     <?php if ($href !== null): ?>
                         <a href="<?= Security::escape($appUrl . $href) ?>"><span class="quick__icon"><?= ui_icon($icon) ?></span><?= Security::escape($label) ?><span class="chev"><?= ui_icon('chev', 20) ?></span></a>
                     <?php else: ?>
-                        <span class="is-soon"><span class="quick__icon"><?= ui_icon($icon) ?></span><?= Security::escape($label) ?><span class="badge badge--plain">เร็วๆ นี้</span></span>
+                        <span class="is-soon" title="เร็วๆ นี้"><span class="quick__icon"><?= ui_icon($icon) ?></span><?= Security::escape($label) ?><span class="sr-only"> (เร็วๆ นี้)</span><span class="chev"><?= ui_icon('chev', 20) ?></span></span>
                     <?php endif; ?>
                 </li>
             <?php endforeach; ?>
@@ -218,6 +264,7 @@ $tiles = [
         <?= $empty('ยังไม่มีเนื้อหาการเรียน') ?>
     <?php endif; ?>
 </section>
+<?php endif; ?>
 <?php endif; ?>
 <?php endif; ?>
 <?php require __DIR__ . '/includes/footer.php'; ?>
