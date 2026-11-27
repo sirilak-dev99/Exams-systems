@@ -23,9 +23,14 @@ final class QuestionController extends Controller
             ? trim((string)$_GET['status'])
             : null;
 
-        $this->json(200, [
-            'questions' => $this->model->listQuestions($courseId, $status),
-        ], null);
+        $questions = $this->model->listQuestions($courseId, $status);
+
+        if (Security::wantsJson()) {
+            $this->json(200, ['questions' => $questions], null);
+            return;
+        }
+
+        $this->view('questions/index', ['pageTitle' => 'คลังข้อสอบ']);
     }
 
     // GET /questions/create
