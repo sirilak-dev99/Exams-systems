@@ -667,3 +667,15 @@ body.layout-default { font-family: Tahoma, "Noto Sans Thai", sans-serif; color: 
 .layout-default .site-nav a[aria-current="page"] { color: #fff; font-weight: 700; border-bottom-color: #8fb0ff; }
 .layout-default .site-nav span { color: #8d96ab; cursor: default; }
 .layout-default .site-nav small { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: rgba(255, 255, 255, .10); }
+
+/* ---------- ตัวกรองเหนือตาราง ---------- */
+.layout-default .filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; margin: 20px 0; }
+.layout-default .filters label { margin: 0 0 6px; }
+.layout-default .filters input,
+.layout-default .filters select { width: 200px; padding: 11px; border: 1px solid #cbd2df; border-radius: 8px; font: inherit; background: #fff; }
+.layout-default .filters button { margin: 0; width: auto; }
+.layout-default .filters a { align-self: center; }
+
+/* ---------- ตาราง ---------- */
+.layout-default .table th { text-align: left; }
+.badge--upcoming { background: #e0f2fe; color: #075985; border-color: #9fd3f2; }
