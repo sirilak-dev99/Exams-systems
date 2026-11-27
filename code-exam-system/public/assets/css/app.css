@@ -751,3 +751,18 @@ fieldset.pills { border: 0; margin: 0; padding: 0; min-width: 0; }
 .pill input { accent-color: var(--c-primary); margin: 0 8px 0 0; }
 label.pill { cursor: pointer; }
 label.pill:has(input:checked) { border: 2px solid var(--c-primary); background: #EDE5FC; color: var(--c-ink); font-weight: 700; padding: 0 15px; }
+.form-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .form-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .form-grid--4 { grid-template-columns: 1fr; } }
+.settings-form { display: flex; flex-direction: column; gap: 16px; padding-top: 18px; }
+.settings-form__foot { padding-top: 16px; border-top: 1px solid var(--c-line); }
+.link-btn--start { align-self: flex-start; padding: 4px 0; min-height: 32px; }
+.btn--danger-outline { background: #FFF; color: #991B1B; border-color: #991B1B; }
+.btn--danger-outline:hover { background: var(--c-danger-bg); color: #7F1D1D; }
+.btn small { font-size: 13px; font-weight: 600; opacity: .8; }
+.danger-zone {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-top: 20px;
+  padding: 16px 18px; border: 1px solid var(--c-danger-line); border-radius: 12px; background: var(--c-danger-bg);
+}
+.danger-zone b { color: #991B1B; }
+.danger-zone p { margin: 2px 0 0; color: var(--c-neutral); font-size: 15px; }
