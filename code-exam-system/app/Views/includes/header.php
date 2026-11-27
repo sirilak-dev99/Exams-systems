@@ -7,9 +7,11 @@ $appUrl    = rtrim((string)env('APP_URL', ''), '/');
 $authUser  = Security::currentUser();
 $layout    = $authUser !== null ? 'app' : 'default';
 
-// ---------- เวอร์ชัน CSS ----------
-$cssFile = dirname(__DIR__, 3) . '/public/assets/css/app.css';
-$cssVer  = is_file($cssFile) ? (string)filemtime($cssFile) : '1';
+// ---------- เวอร์ชันไฟล์ ----------
+$assetsDir = dirname(__DIR__, 3) . '/public/assets';
+$assetVer  = static fn (string $path): string => is_file($assetsDir . $path) ? (string)filemtime($assetsDir . $path) : '1';
+$cssVer    = $assetVer('/css/app.css');
+$scripts   = array_merge(['/js/api.js'], (array)($pageScripts ?? []));
 ?>
 <?php /* ---------- head ---------- */ ?>
 <!doctype html>
@@ -17,11 +19,17 @@ $cssVer  = is_file($cssFile) ? (string)filemtime($cssFile) : '1';
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="app-url" content="<?= Security::escape($appUrl) ?>">
+<meta name="csrf-token" content="<?= Security::escape(Security::csrfToken()) ?>">
 <title><?= Security::escape($pageTitle) ?> · ระบบคลังข้อสอบ คณะพยาบาลศาสตร์</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= Security::escape($appUrl) ?>/assets/css/app.css?v=<?= Security::escape($cssVer) ?>">
+<?php /* ---------- สคริปต์ ---------- */ ?>
+<?php foreach ($scripts as $script): ?>
+<script defer src="<?= Security::escape($appUrl) ?>/assets<?= Security::escape($script) ?>?v=<?= Security::escape($assetVer($script)) ?>"></script>
+<?php endforeach; ?>
 </head>
 <body class="layout-<?= $layout ?>">
 <a class="skip-link" href="#content">ข้ามไปที่เนื้อหา</a>
