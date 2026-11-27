@@ -779,3 +779,5 @@ button.pill { font: inherit; cursor: pointer; }
 .modal__foot--split { align-items: center; }
 .panel .table td.num, .panel .table th.num { text-align: right; }
 .panel .table td.center, .panel .table th.center { text-align: center; }
+.form-grid--4 .span-2 { grid-column: span 2; }
+@media (max-width: 700px) { .form-grid--4 .span-2 { grid-column: 1 / -1; } }
