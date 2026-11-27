@@ -177,3 +177,25 @@ $router->get('/reports/exams/{id}/export', [ReportStatisticsController::class, '
 
 // ประวัติการทำงาน audit_logs (ลำดับ 50)
 $router->get('/audit-logs', [ReportStatisticsController::class, 'indexAuditLogs']);
+
+// 1. กลุ่มหน้าแอดมิน (Admin)
+$router->get('/admin/users',    [PageController::class, 'adminUsers']);
+$router->get('/admin/roles',    [PageController::class, 'adminRoles']);
+$router->get('/admin/students', [PageController::class, 'adminStudents']);
+$router->get('/admin/news',     [PageController::class, 'adminNews']);
+$router->get('/admin/settings', [PageController::class, 'adminSettings']);
+
+// 2. กลุ่มหน้านิสิต (Student)
+$router->get('/student/courses', [PageController::class, 'studentCourses']);
+$router->get('/student/exams',   [PageController::class, 'studentExams']);
+$router->get('/student/results', [PageController::class, 'studentResults']);
+$router->get('/student/news',    [PageController::class, 'studentNews']);
+$router->get('/student/profile', [PageController::class, 'studentProfile']);
+
+// 3. หน้าฟอร์มสร้างคำถามแยก
+$router->get('/questions/create', [QuestionController::class, 'create']);
+
+// 4. กลุ่มหน้านำเข้าข้อมูลจาก Excel
+$router->get('/import',          [PageController::class, 'importIndex']);
+$router->get('/import/courses',  [PageController::class, 'importCourses']);
+$router->get('/import/students', [PageController::class, 'importStudents']);

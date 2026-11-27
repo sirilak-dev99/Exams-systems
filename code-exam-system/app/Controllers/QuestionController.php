@@ -28,6 +28,23 @@ final class QuestionController extends Controller
         ], null);
     }
 
+    // GET /questions/create
+    public function create(): void
+    {
+        Security::requirePermission('question.manage');
+
+        if (Security::wantsJson()) {
+            $this->json(200, ['page' => 'questions/create'], null);
+            return;
+        }
+
+        $this->view('questions/create', [
+            'pageTitle' => 'สร้างคำถามใหม่',
+            'error'     => null,
+            'old'       => [],
+        ]);
+    }
+
     // GET /questions/{id}
     public function show(int|string $id): void
     {
