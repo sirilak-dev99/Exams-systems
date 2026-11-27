@@ -23,6 +23,12 @@ if ($isStaff && !$isTeacher) {
         $navGroups[''][] = ['คลังข้อสอบ',      'bank',  null, null, []];
         $navGroups[''][] = ['จัดการชุดสอบ',    'clip',  null, null, []];
         $navGroups[''][] = ['ผลสอบและรายงาน', 'chart', null, null, []];
+    } else {
+        $navGroups[''][] = ['รายวิชาของฉัน',     'book',  null, null, []];
+        $navGroups[''][] = ['การสอบของฉัน',     'clip',  null, null, []];
+        $navGroups[''][] = ['ผลการสอบ',         'chart', null, null, []];
+        $navGroups[''][] = ['ข่าวประชาสัมพันธ์', 'news',  null, null, []];
+        $navGroups[''][] = ['โปรไฟล์',          'user',  null, null, []];
     }
 }
 if ($isAdmin) {
@@ -60,8 +66,8 @@ $viewsDir = dirname(__DIR__);
                             <?= ui_icon($icon) ?><span><?= Security::escape($label) ?></span>
                         </a>
                     <?php else: ?>
-                        <span class="nav__link nav__link--soon" aria-disabled="true">
-                            <?= ui_icon($icon) ?><span><?= Security::escape($label) ?></span><small class="nav__soon">เร็วๆ นี้</small>
+                        <span class="nav__link nav__link--soon" aria-disabled="true" title="เร็วๆ นี้">
+                            <?= ui_icon($icon) ?><span><?= Security::escape($label) ?></span><span class="sr-only"> (เร็วๆ นี้)</span>
                         </span>
                     <?php endif; ?>
                 </li>
