@@ -115,3 +115,13 @@ $router->get('/exams/{id}', [ExamController::class, 'show']);
 $router->post('/exams/{id}', [ExamController::class, 'update']);
 $router->post('/exams/{id}/sections', [ExamController::class, 'syncSections']);
 $router->post('/exams/{id}/questions', [ExamController::class, 'syncQuestions']);
+
+// Blueprint และการสุ่มข้อสอบ (ลำดับ 29)
+$router->get('/exams/{id}/blueprint', [ExamBlueprintController::class, 'show']);
+$router->post('/exams/{id}/blueprint', [ExamBlueprintController::class, 'store']);
+$router->post('/exams/{id}/blueprint/preview', [ExamBlueprintController::class, 'preview']);
+$router->post('/exams/{id}/blueprint/generate', [ExamBlueprintController::class, 'generate']);
+
+// ระบบเปลี่ยนเวอร์ชันข้อสอบระหว่างสอบ (ลำดับ 31)
+$router->get('/exams/{id}/version-releases', [ExamVersionReleaseController::class, 'index']);
+$router->post('/exams/{id}/version-releases', [ExamVersionReleaseController::class, 'store']);
