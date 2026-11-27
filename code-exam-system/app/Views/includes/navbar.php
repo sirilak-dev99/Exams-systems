@@ -10,7 +10,7 @@ $catalog = ['/programs', '/course-groups', '/courses', '/academic-terms', '/cour
 $navGroups = [];
 if ($isStaff && !$isTeacher) {
     $navGroups['งานวิชาการ'] = [
-        ['Dashboard',          'home',   '/',         'dashboard',      []],
+        ['หน้าหลัก',           'home',   '/',         'dashboard',      []],
         ['หลักสูตรและรายวิชา', 'school', '/programs', 'programs/index', $catalog],
         ['จัดการนิสิต',         'users',  null,        null,             []],
         ['ติดตามผลการสอบ',     'chart',  null,        null,             []],
