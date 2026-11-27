@@ -151,3 +151,14 @@ $router->get('/attempts/{id}', [AttemptController::class, 'show']);
 $router->post('/attempts/{id}/resume', [AttemptController::class, 'resume']);
 $router->post('/attempts/{id}/answers', [AttemptController::class, 'saveAnswer']);
 $router->post('/attempts/{id}/submit', [AttemptController::class, 'submit']);
+
+// กู้คืนเมื่อหลุดการเชื่อมต่อ (ลำดับ 41)
+$router->get('/exams/{id}/attempts/active', [AttemptController::class, 'activeAttempt']);
+
+// ตรวจปรนัย มอบหมายงานตรวจอัตนัย ให้คะแนน Rubric และประวัติแก้คะแนน (ลำดับ 42, 43, 45)
+$router->post('/attempts/{id}/grade-objective', [GradingController::class, 'gradeObjective']);
+$router->get('/exams/{id}/grading-assignments', [GradingController::class, 'indexAssignments']);
+$router->post('/exams/{id}/grading-assignments', [GradingController::class, 'assignGrader']);
+$router->post('/grading-assignments/{id}/status', [GradingController::class, 'updateAssignmentStatus']);
+$router->post('/attempt-answers/{id}/rubric-grade', [GradingController::class, 'rubricGrade']);
+$router->get('/attempt-answers/{id}/grading', [GradingController::class, 'showGrading']);

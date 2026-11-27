@@ -883,4 +883,54 @@ final class AttemptModel
             ':ua'          => $userAgent,
         ]);
     }
+
+    /**
+     * [Task 41] ตรวจว่านิสิตมี attempt ค้างอยู่ (in_progress) สำหรับชุดสอบนี้หรือไม่
+     */
+    public function findActiveAttemptForExam(int $examId, int $userId): array
+    {
+        $exam = $this->findExamById($examId);
+        if (!$exam) {
+            return ['error' => [404, 'EXAM_NOT_FOUND', 'ไม่พบข้อมูลชุดข้อสอบ']];
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM attempts
+            WHERE exams_id = :eid
+              AND users_id = :uid
+              AND status = 'in_progress'
+            ORDER BY id_attempts DESC
+            LIMIT 1
+        ");
+        $stmt->execute([':eid' => $examId, ':uid' => $userId]);
+        $attempt = $stmt->fetch();
+
+        if (!$attempt) {
+            return [
+                'data' => [
+                    'has_active_attempt'     => false,
+                    'require_code_on_resume' => false,
+                    'attempt'                => null,
+                ],
+            ];
+        }
+
+        $needCode = ((int)$exam['require_exam_code'] === 1)
+            && ((int)$exam['require_code_on_resume'] === 1 || (int)$attempt['reentry_required'] === 1);
+
+        $payload = [
+            'has_active_attempt'     => true,
+            'require_code_on_resume' => $needCode,
+            'attempt'                => $attempt,
+        ];
+
+        // หากไม่ต้องกรอกรหัสเข้าสอบใหม่ ส่งคำถามและคำตอบล่าสุดกลับไปกู้คืนหน้าจอได้ทันที
+        if (!$needCode) {
+            $payload['questions']     = $this->getExamQuestionsForPlayer($examId);
+            $payload['saved_answers'] = $this->getSavedAnswers((int)$attempt['id_attempts']);
+        }
+
+        return ['data' => $payload];
+    }
 }

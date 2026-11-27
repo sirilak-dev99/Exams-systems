@@ -211,6 +211,30 @@ final class AttemptController extends Controller
         $this->json(200, $result['data'], null);
     }
 
+    // GET /exams/{id}/attempts/active (Task 41: ตรวจ attempt ค้างอยู่ก่อนแสดงหน้าเข้าสอบ)
+    public function activeAttempt(int|string $id): void
+    {
+        $userId = $this->requireLoggedInUserId();
+        if ($userId === null) {
+            return;
+        }
+
+        $examId = $this->parsePositiveId($id);
+        if ($examId === null) {
+            $this->json(400, null, ['code' => 'INVALID_ID', 'message' => 'รหัสชุดข้อสอบต้องเป็นจำนวนเต็มบวก']);
+            return;
+        }
+
+        $result = $this->model->findActiveAttemptForExam($examId, $userId);
+        if (isset($result['error'])) {
+            [$status, $code, $message] = $result['error'];
+            $this->json($status, null, ['code' => $code, 'message' => $message]);
+            return;
+        }
+
+        $this->json(200, $result['data'], null);
+    }
+
     private function requireLoggedInUserId(): ?int
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
