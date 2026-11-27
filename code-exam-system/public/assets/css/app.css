@@ -653,3 +653,17 @@ body.layout-default { font-family: Tahoma, "Noto Sans Thai", sans-serif; color: 
 .layout-default form button { margin-top: 20px; width: 100%; }
 .layout-default .alert { display: block; border: 0; padding: 12px; border-radius: 8px; background: #fff0f0; color: #a12c2c; }
 .layout-default .site-footer { text-align: center; color: #7a8497; padding: 24px; }
+
+/* ---------- แถบบน: ผู้ใช้ + ออกจากระบบ ---------- */
+.layout-default .site-header { align-items: center; }
+.layout-default .site-header__user { display: flex; align-items: center; gap: 12px; margin: 0; }
+.layout-default .site-header__user button { margin: 0; width: auto; padding: 8px 14px; }
+
+/* ---------- เมนู ---------- */
+.layout-default .site-nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 5vw; background: #2b3550; }
+.layout-default .site-nav a,
+.layout-default .site-nav span { display: inline-flex; align-items: center; gap: 6px; min-height: 48px; padding: 0 14px; color: #dfe4f0; text-decoration: none; border-bottom: 3px solid transparent; }
+.layout-default .site-nav a:hover { color: #fff; background: rgba(255, 255, 255, .08); }
+.layout-default .site-nav a[aria-current="page"] { color: #fff; font-weight: 700; border-bottom-color: #8fb0ff; }
+.layout-default .site-nav span { color: #8d96ab; cursor: default; }
+.layout-default .site-nav small { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: rgba(255, 255, 255, .10); }

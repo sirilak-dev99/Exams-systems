@@ -27,13 +27,15 @@ $cssVer  = is_file($cssFile) ? (string)filemtime($cssFile) : '1';
     <?php if ($authUser === null): ?>
         <a href="<?= Security::escape($appUrl) ?>/login">เข้าสู่ระบบ</a>
     <?php else: ?>
-        <form method="post" action="<?= Security::escape($appUrl) ?>/logout" style="display:flex;align-items:center;gap:12px;margin:0">
+        <form class="site-header__user" method="post" action="<?= Security::escape($appUrl) ?>/logout">
             <span><?= Security::escape((string)($authUser['display_name'] ?? '')) ?></span>
             <input type="hidden" name="_csrf" value="<?= Security::escape(Security::csrfToken()) ?>">
-            <button type="submit" style="margin:0;width:auto">ออกจากระบบ</button>
+            <button type="submit">ออกจากระบบ</button>
         </form>
     <?php endif; ?>
 </header>
+
+<?php if ($authUser !== null) { require __DIR__ . '/navbar.php'; } ?>
 
 <?php /* ---------- เนื้อหา ---------- */ ?>
 <main id="content" class="container">
