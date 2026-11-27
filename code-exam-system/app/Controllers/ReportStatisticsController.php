@@ -299,6 +299,113 @@ final class ReportStatisticsController extends Controller
         fclose($out);
     }
 
+    // GET /reports/exams/{id}/subjective-export (FR-19: ส่งออกคำตอบอัตนัยเป็นไฟล์ Word)
+    public function exportSubjectiveAnswersWord(int|string $id): void
+    {
+        Security::requirePermission(['exam.grade', 'exam.manage']);
+
+        $examId = $this->parsePositiveId($id);
+        if ($examId === null) {
+            $this->json(400, null, ['code' => 'INVALID_ID', 'message' => 'รหัสชุดข้อสอบต้องเป็นจำนวนเต็มบวก']);
+            return;
+        }
+
+        $sectionId = isset($_GET['sections_id']) && $_GET['sections_id'] !== ''
+            ? $this->parsePositiveId($_GET['sections_id'])
+            : null;
+        $examQuestionId = isset($_GET['exam_question_id']) && $_GET['exam_question_id'] !== ''
+            ? $this->parsePositiveId($_GET['exam_question_id'])
+            : null;
+
+        $result = $this->model->getSubjectiveAnswersForExport($examId, $sectionId, $examQuestionId);
+        if (isset($result['error'])) {
+            [$status, $code, $message] = $result['error'];
+            $this->json($status, null, ['code' => $code, 'message' => $message]);
+            return;
+        }
+
+        $exam   = $result['data']['exam'];
+        $course = $result['data']['course'];
+        $items  = $result['data']['items'];
+
+        $this->auditModel->record(
+            $this->currentUserId(),
+            'EXPORT_SUBJECTIVE_WORD',
+            'exams',
+            $examId,
+            null,
+            [
+                'sections_id'      => $sectionId,
+                'exam_question_id' => $examQuestionId,
+                'exported_rows'    => count($items),
+            ],
+            'ส่งออกคำตอบข้อสอบอัตนัยเป็นไฟล์ Word (FR-19)',
+            $this->clientIp(),
+            $this->clientUserAgent()
+        );
+
+        $filename = 'exam_' . $examId . '_subjective_answers_' . date('Ymd_His') . '.doc';
+        header('Content-Type: application/msword; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+
+        $courseLabel = $course
+            ? htmlspecialchars(($course['code'] ?? '') . ' ' . ($course['name'] ?? ''), ENT_QUOTES, 'UTF-8')
+            : '-';
+        $examTitle = htmlspecialchars((string)($exam['title'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $exportedAt = date('d/m/Y H:i');
+
+        echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" ';
+        echo 'xmlns:w="urn:schemas-microsoft-com:office:word" ';
+        echo 'xmlns="http://www.w3.org/TR/REC-html40">';
+        echo '<head><meta charset="utf-8"><title>' . $examTitle . '</title>';
+        echo '<style>
+            body { font-family: "TH Sarabun New", "Sarabun", Tahoma, sans-serif; font-size: 16pt; line-height: 1.4; }
+            h1 { font-size: 20pt; margin-bottom: 4pt; }
+            .meta { margin-bottom: 14pt; color: #333; }
+            .answer-card { border: 1px solid #999; padding: 10pt; margin-bottom: 14pt; page-break-inside: avoid; }
+            .q-header { font-weight: bold; background-color: #f2f2f2; padding: 6pt; border-bottom: 1px solid #ccc; margin-bottom: 8pt; }
+            .student-info { font-weight: bold; margin-bottom: 6pt; }
+            .answer-box { border: 1px dashed #aaa; padding: 8pt; min-height: 40pt; background-color: #fafafa; margin-bottom: 8pt; white-space: pre-wrap; }
+            .grade-box { border-top: 1px solid #ccc; padding-top: 6pt; font-weight: bold; }
+        </style></head><body>';
+
+        echo '<h1>เอกสารคำตอบข้อสอบอัตนัยสำหรับตรวจภายนอกระบบ</h1>';
+        echo '<div class="meta">';
+        echo '<strong>ชุดข้อสอบ:</strong> ' . $examTitle . '<br>';
+        echo '<strong>รายวิชา:</strong> ' . $courseLabel . '<br>';
+        echo '<strong>วันที่ส่งออก:</strong> ' . $exportedAt . ' | <strong>จำนวนรายการ:</strong> ' . count($items) . ' รายการ';
+        echo '</div>';
+
+        if ($items === []) {
+            echo '<p>ไม่พบคำตอบข้อสอบอัตนัยสำหรับเงื่อนไขที่เลือก</p>';
+        } else {
+            foreach ($items as $row) {
+                $sortOrder    = (int)$row['sort_order'];
+                $maxScore     = number_format((float)$row['item_max_score'], 2);
+                $qText        = nl2br(htmlspecialchars((string)($row['question_text'] ?? ''), ENT_QUOTES, 'UTF-8'));
+                $studentCode  = htmlspecialchars((string)($row['student_code'] ?? '-'), ENT_QUOTES, 'UTF-8');
+                $displayName  = htmlspecialchars((string)($row['display_name'] ?? '-'), ENT_QUOTES, 'UTF-8');
+                $sectionNo    = htmlspecialchars((string)($row['section_no'] ?? '-'), ENT_QUOTES, 'UTF-8');
+                $attemptNo    = (int)$row['attempt_no'];
+                $answerText   = trim((string)($row['answer_text'] ?? ''));
+                $answerHtml   = $answerText !== ''
+                    ? nl2br(htmlspecialchars($answerText, ENT_QUOTES, 'UTF-8'))
+                    : '<em>(ไม่ได้ตอบคำถามข้อนี้)</em>';
+                $currentScore = $row['current_score'] !== null ? number_format((float)$row['current_score'], 2) : '..........';
+
+                echo '<div class="answer-card">';
+                echo '<div class="q-header">ข้อที่ ' . $sortOrder . ' (คะแนนเต็ม ' . $maxScore . ' คะแนน): ' . $qText . '</div>';
+                echo '<div class="student-info">รหัสนิสิต: ' . $studentCode . ' | ชื่อ-สกุล: ' . $displayName . ' | กลุ่มเรียน: ' . $sectionNo . ' | ครั้งที่สอบ: ' . $attemptNo . '</div>';
+                echo '<div class="answer-box">' . $answerHtml . '</div>';
+                echo '<div class="grade-box">คะแนนที่ได้: ' . $currentScore . ' / ' . $maxScore . ' คะแนน &nbsp;&nbsp;&nbsp; ข้อเสนอแนะ: ........................................................................</div>';
+                echo '</div>';
+            }
+        }
+
+        echo '</body></html>';
+    }
+
     // GET /audit-logs (Task 50: หน้า/API ดูประวัติการทำงานสำหรับ Admin)
     public function indexAuditLogs(): void
     {

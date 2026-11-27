@@ -175,6 +175,9 @@ $router->post('/exam-statistics/{id}/set-current', [ReportStatisticsController::
 // ส่งออกรายงานเป็น CSV และ Excel (ลำดับ 49)
 $router->get('/reports/exams/{id}/export', [ReportStatisticsController::class, 'exportExamScores']);
 
+// ส่งออกคำตอบข้อสอบอัตนัยเป็นไฟล์ Word (FR-19)
+$router->get('/reports/exams/{id}/subjective-export', [ReportStatisticsController::class, 'exportSubjectiveAnswersWord']);
+
 // ประวัติการทำงาน audit_logs (ลำดับ 50)
 $router->get('/audit-logs', [ReportStatisticsController::class, 'indexAuditLogs']);
 
